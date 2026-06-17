@@ -12,6 +12,22 @@ enum input_type { INPUT_TYPE_SOURCE, INPUT_TYPE_SCENE };
 struct draw_source_data {
 	enum input_type input_type;
 
+	// Detector channel (1 or 2). Selects which shared-memory pair this source
+	// uses, so two detectors (one per player) can run at the same time.
+	int channel;
+
+	// Crop applied to the captured input before it is sent to the detector
+	// (pixels removed from each edge). Lets the user focus detection on a
+	// region of the camera without affecting the source elsewhere.
+	uint32_t crop_left;
+	uint32_t crop_top;
+	uint32_t crop_right;
+	uint32_t crop_bottom;
+
+	// Rotate the captured input 180° before sending it to the detector
+	// (useful when the camera is mounted upside down). Detector-only.
+	bool rotate_180;
+
 	obs_weak_source_t *source;
 
 	void *region;

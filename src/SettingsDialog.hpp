@@ -24,9 +24,14 @@ public:
 
 private:
 	QLineEdit *python_path = new QLineEdit();
+	// Player 1 deck lists
 	QComboBox *deck_list1 = new QComboBox();
 	QComboBox *deck_list2 = new QComboBox();
 	QComboBox *deck_list3 = new QComboBox();
+	// Player 2 deck lists
+	QComboBox *deck_list1_p2 = new QComboBox();
+	QComboBox *deck_list2_p2 = new QComboBox();
+	QComboBox *deck_list3_p2 = new QComboBox();
 	QComboBox *model_choice = new QComboBox();
 	QSpinBox *minimum_out_of_screen_time = new QSpinBox;
 	QSpinBox *minimum_screen_time = new QSpinBox;
