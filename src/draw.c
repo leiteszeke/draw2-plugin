@@ -69,7 +69,12 @@ uint32_t draw_source_get_width(void *data)
 
 void draw_source_get_defaults(obs_data_t *settings)
 {
-	UNUSED_PARAMETER(settings);
+	obs_data_set_default_int(settings, "channel", 1);
+	obs_data_set_default_int(settings, "crop_left", 0);
+	obs_data_set_default_int(settings, "crop_top", 0);
+	obs_data_set_default_int(settings, "crop_right", 0);
+	obs_data_set_default_int(settings, "crop_bottom", 0);
+	obs_data_set_default_bool(settings, "rotate_180", false);
 }
 
 void draw_source_video_render(void *data, gs_effect_t *effect)
@@ -88,14 +93,29 @@ void draw_source_video_render(void *data, gs_effect_t *effect)
 		return;
 	}
 
-	uint32_t width = obs_source_get_width(source);
-	uint32_t height = obs_source_get_height(source);
+	uint32_t src_width = obs_source_get_width(source);
+	uint32_t src_height = obs_source_get_height(source);
 
-	if (width == 0 || height == 0) {
+	if (src_width == 0 || src_height == 0) {
 		obs_source_release(source);
 		context->processing = false;
 		return;
 	}
+
+	// Apply the user-defined crop (pixels removed from each edge). Ignore the
+	// crop on an axis if it would leave nothing to capture.
+	uint32_t crop_l = context->crop_left, crop_t = context->crop_top;
+	uint32_t crop_r = context->crop_right, crop_b = context->crop_bottom;
+	if (crop_l + crop_r >= src_width) {
+		crop_l = 0;
+		crop_r = 0;
+	}
+	if (crop_t + crop_b >= src_height) {
+		crop_t = 0;
+		crop_b = 0;
+	}
+	uint32_t width = src_width - crop_l - crop_r;
+	uint32_t height = src_height - crop_t - crop_b;
 
 	if (!context->render || width != context->source_width || height != context->source_height) {
 		obs_enter_graphics();
@@ -118,7 +138,15 @@ void draw_source_video_render(void *data, gs_effect_t *effect)
 	struct vec4 clear_color;
 	vec4_set(&clear_color, 0.0f, 0.0f, 0.0f, 1.0f); // black
 	gs_clear(GS_CLEAR_COLOR, &clear_color, 0.0f, 0);
-	gs_ortho(0.0f, (float)width, 0.0f, (float)height, -100.0f, 100.0f);
+	// Map the cropped region into the render target. For a 180° rotation we
+	// simply reverse both axes of the orthographic projection.
+	if (context->rotate_180) {
+		gs_ortho((float)(crop_l + width), (float)crop_l, (float)(crop_t + height), (float)crop_t, -100.0f,
+			 100.0f);
+	} else {
+		gs_ortho((float)crop_l, (float)(crop_l + width), (float)crop_t, (float)(crop_t + height), -100.0f,
+			 100.0f);
+	}
 
 	obs_source_video_render(source);
 	gs_texrender_end(context->render);
@@ -232,6 +260,12 @@ bool draw_source_type_changed(void *priv, obs_properties_t *props, obs_property_
 obs_properties_t *draw_source_get_properties(void *data)
 {
 	obs_properties_t *props = obs_properties_create();
+
+	obs_property_t *ch = obs_properties_add_list(props, "channel", obs_module_text("channel"), OBS_COMBO_TYPE_LIST,
+						     OBS_COMBO_FORMAT_INT);
+	obs_property_list_add_int(ch, obs_module_text("player_1"), 1);
+	obs_property_list_add_int(ch, obs_module_text("player_2"), 2);
+
 	obs_property_t *p = obs_properties_add_list(props, "input_type", obs_module_text("InputType"),
 						    OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_INT);
 	obs_property_list_add_int(p, obs_module_text("Source"), INPUT_TYPE_SOURCE);
@@ -243,6 +277,14 @@ obs_properties_t *draw_source_get_properties(void *data)
 				    OBS_COMBO_FORMAT_STRING);
 
 	obs_property_list_insert_string(p, 0, "", "");
+
+	// Crop (pixels removed from each edge) to focus detection on a region.
+	obs_properties_add_int(props, "crop_left", obs_module_text("crop_left"), 0, 7680, 1);
+	obs_properties_add_int(props, "crop_top", obs_module_text("crop_top"), 0, 4320, 1);
+	obs_properties_add_int(props, "crop_right", obs_module_text("crop_right"), 0, 7680, 1);
+	obs_properties_add_int(props, "crop_bottom", obs_module_text("crop_bottom"), 0, 4320, 1);
+
+	obs_properties_add_bool(props, "rotate_180", obs_module_text("rotate_180"));
 
 	return props;
 }
@@ -262,6 +304,18 @@ void draw_source_update(void *data, obs_data_t *settings)
 {
 	draw_source_data_t *context = data;
 	context->input_type = obs_data_get_int(settings, "input_type");
+	int new_channel = (int)obs_data_get_int(settings, "channel");
+	if (new_channel != context->channel) {
+		// Channel changed: drop the old shared memory so we re-create it
+		// under the new per-channel name on the next render.
+		destroy_shared_memory(context);
+		context->channel = new_channel;
+	}
+	context->crop_left = (uint32_t)obs_data_get_int(settings, "crop_left");
+	context->crop_top = (uint32_t)obs_data_get_int(settings, "crop_top");
+	context->crop_right = (uint32_t)obs_data_get_int(settings, "crop_right");
+	context->crop_bottom = (uint32_t)obs_data_get_int(settings, "crop_bottom");
+	context->rotate_180 = obs_data_get_bool(settings, "rotate_180");
 	const char *source_name = obs_data_get_string(settings, "input_selection");
 	obs_source_t *source = obs_get_source_by_name(source_name);
 	if (source) {
