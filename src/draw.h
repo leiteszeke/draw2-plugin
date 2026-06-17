@@ -48,5 +48,6 @@ struct draw_source_data {
 typedef struct draw_source_data draw_source_data_t;
 
 extern struct obs_source_info draw_source;
+extern struct obs_source_info draw_input_preview;
 
 #endif //DRAW_H

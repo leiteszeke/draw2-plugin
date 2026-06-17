@@ -255,6 +255,75 @@ extern "C" bool read_shared_memory(draw_source_data_t *context)
 #endif
 }
 
+extern "C" bool read_input_preview(draw_source_data_t *context)
+{
+#ifdef _WIN32
+	using namespace boost::interprocess;
+	try {
+		windows_shared_memory shm(open_only, OBS_SHM_NAME, read_only);
+		mapped_region region(shm, read_only);
+		auto *hdr = static_cast<shared_frame_header_t *>(region.get_address());
+		if (hdr->width == 0 || hdr->height == 0)
+			return false;
+		if (!context->display_texture || context->display_width != hdr->width ||
+		    context->display_height != hdr->height) {
+			context->display_width = hdr->width;
+			context->display_height = hdr->height;
+			if (context->display_texture)
+				gs_texture_destroy(context->display_texture);
+			context->display_texture = gs_texture_create(context->display_width, context->display_height,
+								     GS_RGBA, 1, nullptr, GS_DYNAMIC);
+		}
+		uint8_t *image_data = static_cast<uint8_t *>(region.get_address()) + sizeof(shared_frame_header_t);
+		gs_texture_set_image(context->display_texture, image_data, context->display_width * 4, false);
+	} catch (const interprocess_exception &) {
+		return false;
+	}
+	return true;
+#else
+	std::string oname = obs_shm_name(context);
+	int fd = shm_open(oname.c_str(), O_RDONLY, 0666);
+	if (fd < 0)
+		return false;
+
+	struct stat st;
+	if (fstat(fd, &st) != 0 || static_cast<size_t>(st.st_size) < sizeof(shared_frame_header_t)) {
+		close(fd);
+		return false;
+	}
+	size_t map_size = static_cast<size_t>(st.st_size);
+
+	void *addr = mmap(nullptr, map_size, PROT_READ, MAP_SHARED, fd, 0);
+	close(fd);
+	if (addr == MAP_FAILED)
+		return false;
+
+	auto *hdr = static_cast<shared_frame_header_t *>(addr);
+	uint32_t width = hdr->width;
+	uint32_t height = hdr->height;
+
+	if (width == 0 || height == 0 || sizeof(shared_frame_header_t) + size_t(width) * height * 4 > map_size) {
+		munmap(addr, map_size);
+		return false;
+	}
+
+	if (!context->display_texture || context->display_width != width || context->display_height != height) {
+		context->display_width = width;
+		context->display_height = height;
+		if (context->display_texture)
+			gs_texture_destroy(context->display_texture);
+		context->display_texture =
+			gs_texture_create(context->display_width, context->display_height, GS_RGBA, 1, nullptr, GS_DYNAMIC);
+	}
+
+	uint8_t *image_data = static_cast<uint8_t *>(addr) + sizeof(shared_frame_header_t);
+	gs_texture_set_image(context->display_texture, image_data, context->display_width * 4, false);
+
+	munmap(addr, map_size);
+	return true;
+#endif
+}
+
 extern "C" void ensure_shared_memory_exists(draw_source_data_t *context, uint32_t width, uint32_t height)
 {
 	if (width != context->source_width || height != context->source_height) {

@@ -45,6 +45,7 @@ bool obs_module_load(void)
 
 	obs_frontend_add_dock_by_id("drawDock", obs_module_text("Draw 2"), dock);
 	obs_register_source(&draw_source);
+	obs_register_source(&draw_input_preview);
 	obs_log(LOG_INFO, "plugin loaded successfully (version %s)", PLUGIN_VERSION);
 	return true;
 }

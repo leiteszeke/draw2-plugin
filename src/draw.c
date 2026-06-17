@@ -346,6 +346,98 @@ void draw_source_update(void *data, obs_data_t *settings)
 	}
 }
 
+// ---------------------------------------------------------------------------
+// "DRAW Input Preview" — a read-only source that shows exactly what the
+// detector receives (the cropped/rotated input the DRAW Display writes to
+// shared memory). Add it to a scratch scene to dial in the crop without
+// touching the live DRAW Display output.
+// ---------------------------------------------------------------------------
+const char *draw_preview_get_name(void *type_data)
+{
+	UNUSED_PARAMETER(type_data);
+	return obs_module_text("draw_input_preview");
+}
+
+void *draw_preview_create(obs_data_t *settings, obs_source_t *source)
+{
+	UNUSED_PARAMETER(source);
+	draw_source_data_t *context = bzalloc(sizeof(draw_source_data_t));
+	context->channel = (int)obs_data_get_int(settings, "channel");
+	return context;
+}
+
+void draw_preview_get_defaults(obs_data_t *settings)
+{
+	obs_data_set_default_int(settings, "channel", 1);
+}
+
+obs_properties_t *draw_preview_get_properties(void *data)
+{
+	UNUSED_PARAMETER(data);
+	obs_properties_t *props = obs_properties_create();
+	obs_property_t *ch = obs_properties_add_list(props, "channel", obs_module_text("channel"), OBS_COMBO_TYPE_LIST,
+						     OBS_COMBO_FORMAT_INT);
+	obs_property_list_add_int(ch, obs_module_text("player_1"), 1);
+	obs_property_list_add_int(ch, obs_module_text("player_2"), 2);
+	return props;
+}
+
+void draw_preview_update(void *data, obs_data_t *settings)
+{
+	draw_source_data_t *context = data;
+	context->channel = (int)obs_data_get_int(settings, "channel");
+}
+
+void draw_preview_destroy(void *data)
+{
+	draw_source_data_t *context = data;
+	obs_enter_graphics();
+	if (context->display_texture)
+		gs_texture_destroy(context->display_texture);
+	obs_leave_graphics();
+	bfree(context);
+}
+
+uint32_t draw_preview_get_width(void *data)
+{
+	draw_source_data_t *context = data;
+	return context->display_width ? context->display_width : 640;
+}
+
+uint32_t draw_preview_get_height(void *data)
+{
+	draw_source_data_t *context = data;
+	return context->display_height ? context->display_height : 360;
+}
+
+void draw_preview_video_render(void *data, gs_effect_t *effect)
+{
+	UNUSED_PARAMETER(effect);
+	draw_source_data_t *context = data;
+	if (!read_input_preview(context))
+		return;
+
+	gs_effect_t *default_effect = obs_get_base_effect(OBS_EFFECT_DEFAULT);
+	gs_eparam_t *image = gs_effect_get_param_by_name(default_effect, "image");
+	gs_effect_set_texture(image, context->display_texture);
+	while (gs_effect_loop(default_effect, "Draw"))
+		gs_draw_sprite(context->display_texture, 0, context->display_width, context->display_height);
+}
+
+struct obs_source_info draw_input_preview = {.id = "draw_input_preview",
+					     .type = OBS_SOURCE_TYPE_INPUT,
+					     .output_flags = OBS_SOURCE_VIDEO | OBS_SOURCE_CUSTOM_DRAW,
+					     .get_name = draw_preview_get_name,
+					     .create = draw_preview_create,
+					     .destroy = draw_preview_destroy,
+					     .update = draw_preview_update,
+					     .get_width = draw_preview_get_width,
+					     .get_height = draw_preview_get_height,
+					     .get_defaults = draw_preview_get_defaults,
+					     .video_render = draw_preview_video_render,
+					     .get_properties = draw_preview_get_properties,
+					     .icon_type = OBS_ICON_TYPE_IMAGE};
+
 struct obs_source_info draw_source = {.id = "draw_source",
 				      .type = OBS_SOURCE_TYPE_INPUT,
 				      .output_flags = OBS_SOURCE_VIDEO | OBS_SOURCE_CUSTOM_DRAW,
