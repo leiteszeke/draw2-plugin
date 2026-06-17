@@ -12,7 +12,7 @@
 [![Medium](https://img.shields.io/badge/-Medium-12100E?style=flat&logo=medium&labelColor=555)](https://medium.com/@hich.tala.phd/how-i-trained-again-my-model-to-detect-and-recognise-a-wide-range-of-yu-gi-oh-cards-5c567a320b0a)
 [![WandB](https://img.shields.io/badge/visualize_in-W%26B-yellow?logo=weightsandbiases&color=%23FFBE00)](https://wandb.ai/hich_/draw)
 
-[🇫🇷 Français](readmes/README_fr.md) | [🇧🇷 Português](readmes/README_pt-br.md) | [🇯🇵 日本語](readmes/README_jp.md)
+[🇫🇷 Français](readmes/README_fr.md) | [🇧🇷 Português](readmes/README_pt-br.md) | [🇯🇵 日本語](readmes/README_jp.md) | [🇪🇸 Español](readmes/README_es.md)
 
 </div>
 
@@ -199,20 +199,35 @@ There is no automatic download on macOS yet, so you must set this up manually.
 
 When the plugin is installed and the model weights are downloaded, you can launch OBS Studio.
 
-1. Open the `Docks` menu and select `Draw 2` to activate the plugin dock.
+1. Open the `Docks` menu and select `Draw 2` to activate the plugin dock. Besides the `Start DRAW` button, the
+   dock shows a log panel where the backend's progress and any errors are printed (one detector process is
+   launched per player).
 2. In the Draw 2 dock, you can configure the plugin settings by clicking on the gear icon next to `Start DRAW` button:
    - **Select Python installation**: Path to the Python prefix that has the `draw` backend installed (the folder
      containing `bin/` and `lib/`). Must be a full Python install, not a virtualenv. See the macOS setup section
      for details.
-   - **Select Deck List**: Choose the deck list file that contains the cards you want to detect. 3 deck lists
-     can be handled at the same time. To add new deck lists, you can click the `Open Folder` button and drag and drop
-     your deck list files (in ydk format) into the opened folder.
+   - **Select Deck Lists to use**: Choose the deck list files that contain the cards you want to detect. Up to
+     3 deck lists can be handled at the same time, and you can configure a separate set for **Player 1** and
+     **Player 2** (one detector runs per player). To add new deck lists, you can click the `Open Folder` button
+     and drag and drop your deck list files (in ydk format) into the opened folder. The folder now lives in OBS'
+     plugin configuration directory, so your deck lists survive plugin updates and reinstalls.
    - **Minimum Out of Screen Time**: The minimum time a card just detected can be displayed again.
    - **Minimum Screen Time**: The minimum time a card is displayed.
    - **Confidence Threshold**: Set the minimum confidence level for card detection. Detections below this threshold
      will be ignored.
 3. The plugin provide a new source called `Draw Display`. You can add it to your scene like any other source.
    This source will display the detected cards on the screen. You can choose what source/scene to detect cards from.
+   Its properties also let you fine-tune what the detector actually sees:
+   - **Detector / Player**: which player (1 or 2) this source feeds, so you can run one detector per player at the
+     same time.
+   - **Crop — Left / Top / Right / Bottom**: pixels removed from each edge to focus detection on a region of the
+     capture, without affecting the source elsewhere.
+   - **Rotate input 180°**: rotate the captured input before sending it to the detector (useful when the camera is
+     mounted upside down).
+
+   > 💡 The plugin also provides a **`DRAW Input Preview`** source that shows exactly what the detector receives
+   > (the cropped/rotated input for the selected player). Add it to a scratch scene to dial in the crop and
+   > framing without touching the live `Draw Display` output.
 4. Click the `Start DRAW` button to start the detection process. The plugin will start detecting cards in real time
    and display them on the screen using the `Draw Display` source. The plugin start detecting from the moment you see
    the

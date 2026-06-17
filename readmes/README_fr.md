@@ -14,7 +14,7 @@
 [![Medium](https://img.shields.io/badge/-Medium-12100E?style=flat&logo=medium&labelColor=555)](https://medium.com/@hich.tala.phd/how-i-trained-again-my-model-to-detect-and-recognise-a-wide-range-of-yu-gi-oh-cards-5c567a320b0a)
 [![WandB](https://img.shields.io/badge/visualize_in-W%26B-yellow?logo=weightsandbiases&color=%23FFBE00)](https://wandb.ai/hich_/draw)
 
-[🇬🇧 English](../README.md) | [🇧🇷 Português](README_pt-br.md) | [🇯🇵 日本語](README_jp.md)
+[🇬🇧 English](../README.md) | [🇧🇷 Português](README_pt-br.md) | [🇯🇵 日本語](README_jp.md) | [🇪🇸 Español](README_es.md)
 
 </div>
 
@@ -125,23 +125,36 @@ n'hésitez pas à soumettre une demande d'extraction.
 
 Une fois le plugin installé et les poids du modèle téléchargés, vous pouvez lancer OBS Studio.
 
-1. Ouvrez le menu `Docks` et sélectionnez `Draw 2` pour activer le dock du plugin.
+1. Ouvrez le menu `Docks` et sélectionnez `Draw 2` pour activer le dock du plugin. En plus du bouton `Start DRAW`, le
+   dock affiche un panneau de logs où s'affichent la progression du backend et les éventuelles erreurs (un processus de
+   détection est lancé par joueur).
 2. Dans le dock `Draw 2`, vous pouvez configurer les paramètres du plugin en cliquant sur l'icône en forme d'engrenage à
    côté du bouton `Start DRAW` :
-    - **Sélectionner la liste de deck** : choisissez les deck lists qui contiennent les cartes que vous souhaitez
-      détecter. 3 deck lists
-      peuvent être gérées en même temps. Pour ajouter de nouvelles deck lists, vous pouvez cliquer sur le bouton
-      `Ouvrir le dossier` et glisser-déposer
-      vos fichiers deck lists (au format ydk) dans le dossier ouvert.
+    - **Sélectionner les deck lists à utiliser** : choisissez les fichiers deck list qui contiennent les cartes que
+      vous souhaitez détecter. Jusqu'à 3 deck lists peuvent être gérées en même temps, et vous pouvez configurer un jeu
+      distinct pour le **Joueur 1** et le **Joueur 2** (un détecteur est lancé par joueur). Pour ajouter de nouvelles
+      deck lists, cliquez sur le bouton `Open Folder` et glissez-déposez vos fichiers deck list (au format ydk) dans le
+      dossier ouvert. Ce dossier se trouve désormais dans le répertoire de configuration des plugins d'OBS, de sorte que
+      vos deck lists survivent aux mises à jour et réinstallations du plugin.
     - **Durée minimale hors écran** : durée minimale pendant laquelle une carte qui vient d'être détectée peut être
       affichée à nouveau.
     - **Durée minimale d'affichage** : durée minimale pendant laquelle une carte est affichée.
     - **Seuil de confidence** : définissez le niveau de confiance minimum pour la détection des cartes. Les détections
       inférieures à ce seuil seront ignorées.
-3. Le plugin fournit une nouvelle source appelée `Affichage DRAW`. Vous pouvez l'ajouter à votre scène comme n'importe
+3. Le plugin fournit une nouvelle source appelée `Draw Display`. Vous pouvez l'ajouter à votre scène comme n'importe
    quelle autre source.
    Cette source affichera les cartes détectées à l'écran. Vous pouvez choisir la source/scène à partir de laquelle
-   détecter les cartes.
+   détecter les cartes. Ses propriétés permettent aussi d'ajuster ce que le détecteur voit réellement :
+    - **Detector / Player** : le joueur (1 ou 2) que cette source alimente, afin de lancer un détecteur par joueur en
+      même temps.
+    - **Crop — Left / Top / Right / Bottom** : pixels retirés de chaque bord pour concentrer la détection sur une
+      région de la capture, sans affecter la source ailleurs.
+    - **Rotate input 180°** : pivote l'entrée capturée avant de l'envoyer au détecteur (utile lorsque la caméra est
+      montée à l'envers).
+
+   > 💡 Le plugin fournit également une source **`DRAW Input Preview`** qui montre exactement ce que le détecteur
+   > reçoit (l'entrée recadrée/pivotée pour le joueur sélectionné). Ajoutez-la à une scène de travail pour régler le
+   > recadrage et le cadrage sans toucher à la sortie `Draw Display` en direct.
 4. Cliquez sur le bouton `Start DRAW` pour lancer le processus de détection. Le plugin commencera à détecter les cartes
    en temps réel
    et les affichera à l'écran à l'aide de la source `Draw Display`. Le plugin commence la détection dès que le bouton
