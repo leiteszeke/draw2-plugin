@@ -7,6 +7,7 @@
 
 #include "draw.h"
 #include "shared_memory_wrapper.h"
+#include "feature_flags.h"
 
 const char *draw_source_get_name(void *type_data)
 {
@@ -261,10 +262,13 @@ obs_properties_t *draw_source_get_properties(void *data)
 {
 	obs_properties_t *props = obs_properties_create();
 
-	obs_property_t *ch = obs_properties_add_list(props, "channel", obs_module_text("channel"), OBS_COMBO_TYPE_LIST,
-						     OBS_COMBO_FORMAT_INT);
-	obs_property_list_add_int(ch, obs_module_text("player_1"), 1);
-	obs_property_list_add_int(ch, obs_module_text("player_2"), 2);
+	// Per-player detector channel. Opt-in: hidden unless enabled in settings.
+	if (draw_feature_enabled(FEATURE_CHANNEL)) {
+		obs_property_t *ch = obs_properties_add_list(props, "channel", obs_module_text("channel"),
+							    OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_INT);
+		obs_property_list_add_int(ch, obs_module_text("player_1"), 1);
+		obs_property_list_add_int(ch, obs_module_text("player_2"), 2);
+	}
 
 	obs_property_t *p = obs_properties_add_list(props, "input_type", obs_module_text("InputType"),
 						    OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_INT);
@@ -279,12 +283,17 @@ obs_properties_t *draw_source_get_properties(void *data)
 	obs_property_list_insert_string(p, 0, "", "");
 
 	// Crop (pixels removed from each edge) to focus detection on a region.
-	obs_properties_add_int(props, "crop_left", obs_module_text("crop_left"), 0, 7680, 1);
-	obs_properties_add_int(props, "crop_top", obs_module_text("crop_top"), 0, 4320, 1);
-	obs_properties_add_int(props, "crop_right", obs_module_text("crop_right"), 0, 7680, 1);
-	obs_properties_add_int(props, "crop_bottom", obs_module_text("crop_bottom"), 0, 4320, 1);
+	// Opt-in: hidden unless enabled in settings.
+	if (draw_feature_enabled(FEATURE_CROP)) {
+		obs_properties_add_int(props, "crop_left", obs_module_text("crop_left"), 0, 7680, 1);
+		obs_properties_add_int(props, "crop_top", obs_module_text("crop_top"), 0, 4320, 1);
+		obs_properties_add_int(props, "crop_right", obs_module_text("crop_right"), 0, 7680, 1);
+		obs_properties_add_int(props, "crop_bottom", obs_module_text("crop_bottom"), 0, 4320, 1);
+	}
 
-	obs_properties_add_bool(props, "rotate_180", obs_module_text("rotate_180"));
+	// Rotate input 180°. Opt-in: hidden unless enabled in settings.
+	if (draw_feature_enabled(FEATURE_ROTATE))
+		obs_properties_add_bool(props, "rotate_180", obs_module_text("rotate_180"));
 
 	return props;
 }
@@ -304,18 +313,26 @@ void draw_source_update(void *data, obs_data_t *settings)
 {
 	draw_source_data_t *context = data;
 	context->input_type = obs_data_get_int(settings, "input_type");
-	int new_channel = (int)obs_data_get_int(settings, "channel");
+
+	// Optional features force a neutral value when disabled, so turning a
+	// feature off in settings reverts behaviour even if the source still has
+	// stored values from when it was enabled.
+	int new_channel = draw_feature_enabled(FEATURE_CHANNEL) ? (int)obs_data_get_int(settings, "channel") : 1;
 	if (new_channel != context->channel) {
 		// Channel changed: drop the old shared memory so we re-create it
 		// under the new per-channel name on the next render.
 		destroy_shared_memory(context);
 		context->channel = new_channel;
 	}
-	context->crop_left = (uint32_t)obs_data_get_int(settings, "crop_left");
-	context->crop_top = (uint32_t)obs_data_get_int(settings, "crop_top");
-	context->crop_right = (uint32_t)obs_data_get_int(settings, "crop_right");
-	context->crop_bottom = (uint32_t)obs_data_get_int(settings, "crop_bottom");
-	context->rotate_180 = obs_data_get_bool(settings, "rotate_180");
+	if (draw_feature_enabled(FEATURE_CROP)) {
+		context->crop_left = (uint32_t)obs_data_get_int(settings, "crop_left");
+		context->crop_top = (uint32_t)obs_data_get_int(settings, "crop_top");
+		context->crop_right = (uint32_t)obs_data_get_int(settings, "crop_right");
+		context->crop_bottom = (uint32_t)obs_data_get_int(settings, "crop_bottom");
+	} else {
+		context->crop_left = context->crop_top = context->crop_right = context->crop_bottom = 0;
+	}
+	context->rotate_180 = draw_feature_enabled(FEATURE_ROTATE) && obs_data_get_bool(settings, "rotate_180");
 	const char *source_name = obs_data_get_string(settings, "input_selection");
 	obs_source_t *source = obs_get_source_by_name(source_name);
 	if (source) {

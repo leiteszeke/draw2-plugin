@@ -67,6 +67,10 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 	int minimum_out_of_screen_time_value = settings.value("minimum_out_of_screen_time", 25).value<int>();
 	int minimum_screen_time_value = settings.value("minimum_screen_time", 6).value<int>();
 	int confidence_value = settings.value("confidence_slider", 1).value<int>();
+	// Optional features default to off, so the plugin matches upstream until opt-in.
+	bool feature_channel_value = settings.value("feature_channel", false).toBool();
+	bool feature_crop_value = settings.value("feature_crop", false).toBool();
+	bool feature_rotate_value = settings.value("feature_rotate", false).toBool();
 
 	auto *layout = new QVBoxLayout(this);
 
@@ -147,6 +151,16 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 	confidence_layout->addWidget(this->confidence_slider);
 	layout->addLayout(confidence_layout);
 
+	// Optional, opt-in features (default off).
+	auto *features_label = new QLabel(obs_module_text("advanced_features"), this);
+	layout->addWidget(features_label);
+	this->feature_channel->setChecked(feature_channel_value);
+	this->feature_crop->setChecked(feature_crop_value);
+	this->feature_rotate->setChecked(feature_rotate_value);
+	layout->addWidget(this->feature_channel);
+	layout->addWidget(this->feature_crop);
+	layout->addWidget(this->feature_rotate);
+
 	this->ok_button->setProperty("class", "QPushButton");
 	this->cancel_button->setProperty("class", "QPushButton");
 
@@ -197,6 +211,9 @@ void SettingsDialog::OkButtonClicked()
 	settings.setValue("minimum_screen_time", this->minimum_screen_time->value());
 	settings.setValue("minimum_out_of_screen_time", this->minimum_out_of_screen_time->value());
 	settings.setValue("confidence_slider", this->confidence_slider->value());
+	settings.setValue("feature_channel", this->feature_channel->isChecked());
+	settings.setValue("feature_crop", this->feature_crop->isChecked());
+	settings.setValue("feature_rotate", this->feature_rotate->isChecked());
 	this->close();
 }
 

@@ -8,6 +8,7 @@
 #include "DrawDock.hpp"
 #include "SettingsDialog.hpp"
 
+#include <QCheckBox>
 #include <QDialog>
 #include <QFileDialog>
 #include <QLineEdit>
@@ -36,6 +37,10 @@ private:
 	QSpinBox *minimum_out_of_screen_time = new QSpinBox;
 	QSpinBox *minimum_screen_time = new QSpinBox;
 	QSlider *confidence_slider = new QSlider(Qt::Horizontal);
+	// Optional, opt-in features (default off). See feature_flags.h.
+	QCheckBox *feature_channel = new QCheckBox(obs_module_text("feature_channel"));
+	QCheckBox *feature_crop = new QCheckBox(obs_module_text("feature_crop"));
+	QCheckBox *feature_rotate = new QCheckBox(obs_module_text("feature_rotate"));
 	QPushButton *python_browse_button = new QPushButton(obs_module_text("browse"));
 	QPushButton *browse_button = new QPushButton(obs_module_text("open_folder"));
 	QPushButton *ok_button = new QPushButton(obs_module_text("ok"));
