@@ -41,6 +41,7 @@ private:
 	QCheckBox *feature_channel = new QCheckBox(obs_module_text("feature_channel"));
 	QCheckBox *feature_crop = new QCheckBox(obs_module_text("feature_crop"));
 	QCheckBox *feature_rotate = new QCheckBox(obs_module_text("feature_rotate"));
+	QCheckBox *feature_input_preview = new QCheckBox(obs_module_text("feature_input_preview"));
 	QPushButton *python_browse_button = new QPushButton(obs_module_text("browse"));
 	QPushButton *browse_button = new QPushButton(obs_module_text("open_folder"));
 	QPushButton *ok_button = new QPushButton(obs_module_text("ok"));

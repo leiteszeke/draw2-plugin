@@ -28,6 +28,7 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 extern "C" {
 #include "draw.h"
 }
+#include "feature_flags.h"
 
 OBS_DECLARE_MODULE()
 OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-US")
@@ -45,7 +46,10 @@ bool obs_module_load(void)
 
 	obs_frontend_add_dock_by_id("drawDock", obs_module_text("Draw 2"), dock);
 	obs_register_source(&draw_source);
-	obs_register_source(&draw_input_preview);
+	// The DRAW Input Preview source is opt-in (off by default). Registration
+	// happens once at load, so toggling it requires restarting OBS.
+	if (draw_feature_enabled(FEATURE_INPUT_PREVIEW))
+		obs_register_source(&draw_input_preview);
 	obs_log(LOG_INFO, "plugin loaded successfully (version %s)", PLUGIN_VERSION);
 	return true;
 }
