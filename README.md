@@ -216,6 +216,16 @@ When the plugin is installed and the model weights are downloaded, you can launc
      will be ignored.
 3. The plugin provide a new source called `Draw Display`. You can add it to your scene like any other source.
    This source will display the detected cards on the screen. You can choose what source/scene to detect cards from.
+
+   This source can also fine-tune what the detector actually sees. These options are **off by default**; enable the
+   ones you need from the Draw 2 settings (gear icon) under *Advanced features*, and they will then appear on the
+   source's properties:
+   - **Detector / Player**: which player (1 or 2) this source feeds, so you can run one detector per player at the
+     same time.
+   - **Crop — Left / Top / Right / Bottom**: pixels removed from each edge to focus detection on a region of the
+     capture, without affecting the source elsewhere.
+   - **Rotate input 180°**: rotate the captured input before sending it to the detector (useful when the camera is
+     mounted upside down).
 4. Click the `Start DRAW` button to start the detection process. The plugin will start detecting cards in real time
    and display them on the screen using the `Draw Display` source. The plugin start detecting from the moment you see
    the

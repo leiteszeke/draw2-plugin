@@ -131,6 +131,11 @@ Quando o plugin está instalado e os "model weights" estão baixados, você pode
       serão ignoradas.
 3. O plugin irá fornecer uma nova fonte chamada `Draw Display`. Você pode adicioná-la a sua cena como qualquer outra fonte.
    Essa fonte irá exibir as cartas detectadas na tela. Você pode escolher de qual fonte/cena detectar as cartas.
+
+   Essa fonte também permite ajustar com precisão o que o detector realmente vê. Essas opções vêm **desativadas por padrão**; ative as que você precisar nas configurações do Draw 2 (ícone de engrenagem), no grupo *Recursos avançados*, e elas passarão a aparecer nas propriedades da fonte:
+    - **Detector / Player**: qual jogador (1 ou 2) essa fonte alimenta, permitindo rodar um detector por jogador ao mesmo tempo.
+    - **Crop — Left / Top / Right / Bottom**: pixels removidos de cada borda para focar a detecção em uma região da captura, sem afetar a fonte em outros lugares.
+    - **Rotate input 180°**: gira a entrada capturada antes de enviá-la ao detector (útil quando a câmera está montada de cabeça para baixo).
 4. Clique no botão `Start DRAW` para começar o processo de detecção. O plugin irá começar a detectar cartas em tempo real
    e exibí-las na tela usando a fonte `Draw Display`. O plugin irá começar a detectar a partir do momento que você vir o botão `Stop DRAW`. 
    Se não aparecer, algo deu errado.

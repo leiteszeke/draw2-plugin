@@ -144,6 +144,16 @@ Une fois le plugin installé et les poids du modèle téléchargés, vous pouvez
    quelle autre source.
    Cette source affichera les cartes détectées à l'écran. Vous pouvez choisir la source/scène à partir de laquelle
    détecter les cartes.
+
+   Cette source permet aussi d'ajuster finement ce que le détecteur voit réellement. Ces options sont
+   **désactivées par défaut** ; activez celles dont vous avez besoin depuis les paramètres de Draw 2 (icône en forme
+   d'engrenage) sous *Fonctionnalités avancées*, et elles apparaîtront alors dans les propriétés de la source :
+    - **Detector / Player** : le joueur (1 ou 2) que cette source alimente, afin de lancer un détecteur par joueur en
+      même temps.
+    - **Crop — Left / Top / Right / Bottom** : pixels retirés de chaque bord pour concentrer la détection sur une
+      région de la capture, sans affecter la source ailleurs.
+    - **Rotate input 180°** : pivote l'entrée capturée avant de l'envoyer au détecteur (utile lorsque la caméra est
+      montée à l'envers).
 4. Cliquez sur le bouton `Start DRAW` pour lancer le processus de détection. Le plugin commencera à détecter les cartes
    en temps réel
    et les affichera à l'écran à l'aide de la source `Draw Display`. Le plugin commence la détection dès que le bouton
