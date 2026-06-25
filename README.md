@@ -226,6 +226,11 @@ When the plugin is installed and the model weights are downloaded, you can launc
      capture, without affecting the source elsewhere.
    - **Rotate input 180°**: rotate the captured input before sending it to the detector (useful when the camera is
      mounted upside down).
+
+   > 💡 The plugin can also provide a **`DRAW Input Preview`** source that shows exactly what the detector receives
+   > (the cropped/rotated input for the selected player). It is **off by default** — enable it in the Draw 2 settings
+   > (*Advanced features*) and restart OBS, then add it to a scratch scene to dial in the crop and framing without
+   > touching the live `Draw Display` output.
 4. Click the `Start DRAW` button to start the detection process. The plugin will start detecting cards in real time
    and display them on the screen using the `Draw Display` source. The plugin start detecting from the moment you see
    the

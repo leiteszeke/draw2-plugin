@@ -136,6 +136,8 @@ Quando o plugin está instalado e os "model weights" estão baixados, você pode
     - **Detector / Player**: qual jogador (1 ou 2) essa fonte alimenta, permitindo rodar um detector por jogador ao mesmo tempo.
     - **Crop — Left / Top / Right / Bottom**: pixels removidos de cada borda para focar a detecção em uma região da captura, sem afetar a fonte em outros lugares.
     - **Rotate input 180°**: gira a entrada capturada antes de enviá-la ao detector (útil quando a câmera está montada de cabeça para baixo).
+
+   > 💡 O plugin também pode fornecer uma fonte **`DRAW Input Preview`** que mostra exatamente o que o detector recebe (a entrada recortada/rotacionada do jogador selecionado). Ela vem **desativada por padrão** — ative-a nas configurações do Draw 2 (*Recursos avançados*) e reinicie o OBS; depois adicione-a a uma cena de testes para ajustar o recorte e o enquadramento sem mexer na saída ao vivo `Draw Display`.
 4. Clique no botão `Start DRAW` para começar o processo de detecção. O plugin irá começar a detectar cartas em tempo real
    e exibí-las na tela usando a fonte `Draw Display`. O plugin irá começar a detectar a partir do momento que você vir o botão `Stop DRAW`. 
    Se não aparecer, algo deu errado.

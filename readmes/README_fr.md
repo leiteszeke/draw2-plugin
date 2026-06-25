@@ -154,6 +154,11 @@ Une fois le plugin installé et les poids du modèle téléchargés, vous pouvez
       région de la capture, sans affecter la source ailleurs.
     - **Rotate input 180°** : pivote l'entrée capturée avant de l'envoyer au détecteur (utile lorsque la caméra est
       montée à l'envers).
+
+   > 💡 Le plugin peut également fournir une source **`DRAW Input Preview`** qui montre exactement ce que le détecteur
+   > reçoit (l'entrée recadrée/pivotée pour le joueur sélectionné). Elle est **désactivée par défaut** : activez-la dans
+   > les paramètres de Draw 2 (*Fonctionnalités avancées*) puis redémarrez OBS, et ajoutez-la ensuite à une scène de
+   > test pour ajuster le recadrage et le cadrage sans toucher à la sortie `Draw Display` en direct.
 4. Cliquez sur le bouton `Start DRAW` pour lancer le processus de détection. Le plugin commencera à détecter les cartes
    en temps réel
    et les affichera à l'écran à l'aide de la source `Draw Display`. Le plugin commence la détection dès que le bouton
