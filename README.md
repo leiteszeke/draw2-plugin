@@ -199,14 +199,17 @@ There is no automatic download on macOS yet, so you must set this up manually.
 
 When the plugin is installed and the model weights are downloaded, you can launch OBS Studio.
 
-1. Open the `Docks` menu and select `Draw 2` to activate the plugin dock.
+1. Open the `Docks` menu and select `Draw 2` to activate the plugin dock. Besides the `Start DRAW` button, the dock
+   shows a log panel where the backend's progress and any errors are printed.
 2. In the Draw 2 dock, you can configure the plugin settings by clicking on the gear icon next to `Start DRAW` button:
    - **Select Python installation**: Path to the Python prefix that has the `draw` backend installed (the folder
      containing `bin/` and `lib/`). Must be a full Python install, not a virtualenv. See the macOS setup section
      for details.
-   - **Select Deck List**: Choose the deck list file that contains the cards you want to detect. 3 deck lists
-     can be handled at the same time. To add new deck lists, you can click the `Open Folder` button and drag and drop
-     your deck list files (in ydk format) into the opened folder.
+   - **Select Deck Lists to use**: Choose the deck list files that contain the cards you want to detect. Up to
+     3 deck lists can be handled at the same time, and you can configure a separate set for **Player 1** and
+     **Player 2**. To add new deck lists, you can click the `Open Folder` button and drag and drop your deck list
+     files (in ydk format) into the opened folder. The folder now lives in OBS' plugin configuration directory, so
+     your deck lists survive plugin updates and reinstalls.
    - **Minimum Out of Screen Time**: The minimum time a card just detected can be displayed again.
    - **Minimum Screen Time**: The minimum time a card is displayed.
    - **Confidence Threshold**: Set the minimum confidence level for card detection. Detections below this threshold

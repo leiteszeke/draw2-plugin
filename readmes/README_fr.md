@@ -125,14 +125,16 @@ n'hésitez pas à soumettre une demande d'extraction.
 
 Une fois le plugin installé et les poids du modèle téléchargés, vous pouvez lancer OBS Studio.
 
-1. Ouvrez le menu `Docks` et sélectionnez `Draw 2` pour activer le dock du plugin.
+1. Ouvrez le menu `Docks` et sélectionnez `Draw 2` pour activer le dock du plugin. En plus du bouton `Start DRAW`, le
+   dock affiche un panneau de logs où s'affichent la progression du backend et les éventuelles erreurs.
 2. Dans le dock `Draw 2`, vous pouvez configurer les paramètres du plugin en cliquant sur l'icône en forme d'engrenage à
    côté du bouton `Start DRAW` :
-    - **Sélectionner la liste de deck** : choisissez les deck lists qui contiennent les cartes que vous souhaitez
-      détecter. 3 deck lists
-      peuvent être gérées en même temps. Pour ajouter de nouvelles deck lists, vous pouvez cliquer sur le bouton
-      `Ouvrir le dossier` et glisser-déposer
-      vos fichiers deck lists (au format ydk) dans le dossier ouvert.
+    - **Sélectionner les deck lists à utiliser** : choisissez les fichiers deck list qui contiennent les cartes que
+      vous souhaitez détecter. Jusqu'à 3 deck lists peuvent être gérées en même temps, et vous pouvez configurer un jeu
+      distinct pour le **Joueur 1** et le **Joueur 2**. Pour ajouter de nouvelles
+      deck lists, cliquez sur le bouton `Open Folder` et glissez-déposez vos fichiers deck list (au format ydk) dans le
+      dossier ouvert. Ce dossier se trouve désormais dans le répertoire de configuration des plugins d'OBS, de sorte que
+      vos deck lists survivent aux mises à jour et réinstallations du plugin.
     - **Durée minimale hors écran** : durée minimale pendant laquelle une carte qui vient d'être détectée peut être
       affichée à nouveau.
     - **Durée minimale d'affichage** : durée minimale pendant laquelle une carte est affichée.

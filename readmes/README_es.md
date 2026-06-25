@@ -200,15 +200,19 @@ Todavía no hay descarga automática en macOS, así que debes configurarlo manua
 
 Cuando el plugin está instalado y los pesos del modelo están descargados, puedes abrir OBS Studio.
 
-1. Abre el menú `Docks` y selecciona `Draw 2` para activar el dock del plugin.
+1. Abre el menú `Docks` y selecciona `Draw 2` para activar el dock del plugin. Además del botón `Start DRAW`, el dock
+   muestra un panel de logs donde se imprimen el progreso del backend y los posibles errores.
 2. En el dock de Draw 2 puedes configurar los ajustes del plugin haciendo clic en el icono de engranaje junto al
    botón `Start DRAW`:
    - **Select Python installation**: ruta al prefijo de Python que tiene instalado el backend `draw` (la carpeta que
      contiene `bin/` y `lib/`). Debe ser una instalación de Python completa, no un virtualenv. Consulta la sección de
      configuración de macOS para más detalles.
-   - **Select Deck List**: elige el archivo de deck list que contiene las cartas que quieres detectar. Se pueden
-     gestionar hasta 3 deck lists a la vez. Para añadir nuevas deck lists, puedes hacer clic en el botón
-     `Open Folder` y arrastrar y soltar tus archivos de deck list (en formato ydk) en la carpeta que se abre.
+   - **Select Deck Lists to use**: elige los archivos de deck list que contienen las cartas que quieres detectar. Se
+     pueden gestionar hasta 3 deck lists a la vez, y puedes configurar un conjunto distinto para el **Jugador 1** y el
+     **Jugador 2**. Para añadir nuevas deck lists, haz clic en el botón
+     `Open Folder` y arrastra y suelta tus archivos de deck list (en formato ydk) en la carpeta que se abre. Esa
+     carpeta ahora se encuentra en el directorio de configuración de plugins de OBS, así que tus deck lists sobreviven
+     a las actualizaciones y reinstalaciones del plugin.
    - **Minimum Out of Screen Time**: el tiempo mínimo que debe pasar para que una carta recién detectada pueda volver
      a mostrarse.
    - **Minimum Screen Time**: el tiempo mínimo que se muestra una carta.
