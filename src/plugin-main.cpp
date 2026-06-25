@@ -21,12 +21,14 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 #include <obs-module.h>
 #include <plugin-support.h>
 #include <plugin-path.h>
+#include <util/platform.h>
 
 #include "DrawDock.hpp"
 
 extern "C" {
 #include "draw.h"
 }
+#include "feature_flags.h"
 
 OBS_DECLARE_MODULE()
 OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-US")
@@ -44,6 +46,10 @@ bool obs_module_load(void)
 
 	obs_frontend_add_dock_by_id("drawDock", obs_module_text("Draw 2"), dock);
 	obs_register_source(&draw_source);
+	// The DRAW Input Preview source is opt-in (off by default). Registration
+	// happens once at load, so toggling it requires restarting OBS.
+	if (draw_feature_enabled(FEATURE_INPUT_PREVIEW))
+		obs_register_source(&draw_input_preview);
 	obs_log(LOG_INFO, "plugin loaded successfully (version %s)", PLUGIN_VERSION);
 	return true;
 }
@@ -56,4 +62,16 @@ void obs_module_unload(void)
 const char *get_plugin_path()
 {
 	return module_path;
+}
+
+const char *get_decklists_path()
+{
+	static char *decklists_path = nullptr;
+	if (!decklists_path) {
+		// e.g. ~/Library/Application Support/obs-studio/plugin_config/draw2-plugin/decklists
+		decklists_path = obs_module_config_path("decklists");
+		if (decklists_path)
+			os_mkdirs(decklists_path);
+	}
+	return decklists_path;
 }

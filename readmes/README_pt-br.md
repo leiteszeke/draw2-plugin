@@ -14,7 +14,7 @@
 [![Medium](https://img.shields.io/badge/-Medium-12100E?style=flat&logo=medium&labelColor=555)](https://medium.com/@hich.tala.phd/how-i-trained-again-my-model-to-detect-and-recognise-a-wide-range-of-yu-gi-oh-cards-5c567a320b0a)
 [![WandB](https://img.shields.io/badge/visualize_in-W%26B-yellow?logo=weightsandbiases&color=%23FFBE00)](https://wandb.ai/hich_/draw)
 
-[🇬🇧 English](../README.md) | [🇫🇷 Français](README_fr.md) | [🇯🇵 日本語](README_jp.md)
+[🇬🇧 English](../README.md) | [🇫🇷 Français](README_fr.md) | [🇯🇵 日本語](README_jp.md) | [🇪🇸 Español](README_es.md)
 
 
 </div>
@@ -108,22 +108,36 @@ Não sou tão familiar com o OBS no MacOS para fornecer um guida de instalação
 O plugin é capaz de compilar com sucesso no MacOS mas não testei ele completamente.
 Se você tem experiência com plugins do OBS no MacOS e gostaria de contribuir com um guia de instalação, 
 sinta-se livre para enviar um pull request.
+
+> ℹ️ O backend Python (`Select Python installation`) precisa ser configurado
+> manualmente no macOS. Aponte para um **prefixo Python completo (com a
+> biblioteca padrão), não um `venv`**, com a versão correspondente à que o
+> plugin foi vinculado (atualmente 3.13), e instale o backend a partir do
+> branch **`obs-plugin`** (`pip install "git+https://github.com/HichTala/draw2@obs-plugin"`).
+> Veja a seção macOS do [README em inglês](../README.md) para os detalhes.
 </details>
 
 ### 🚀 Uso
 
 Quando o plugin está instalado e os "model weights" estão baixados, você pode executar o OBS Studio.
 
-1. Abra o menu `Painéis` e selecione `Draw 2` para ativar o painel do plugin.
+1. Abra o menu `Painéis` e selecione `Draw 2` para ativar o painel do plugin. Além do botão `Start DRAW`, o painel mostra um log onde aparecem o progresso do backend e eventuais erros.
 2. No painel do Draw 2, você pode configurar os ajustes clicando no ícone de engrenagem ao lado do botão `Start DRAW`:
-    - **Select Deck List**: Escolha o arquivo de decklist que contenha as cartas que você quer detectar. 3 decklists podem ser usadas ao mesmo tempo. 
-      Para adicionar novas decklists, você pode clicar no botão `Open Folder` e arrastar suas decklists (em formato .ydk) na pasta que foi aberta.
+    - **Select Deck Lists to use**: Escolha os arquivos de decklist que contêm as cartas que você quer detectar. Até 3 decklists podem ser usadas ao mesmo tempo, e você pode configurar um conjunto separado para o **Jogador 1** e o **Jogador 2**. 
+      Para adicionar novas decklists, você pode clicar no botão `Open Folder` e arrastar suas decklists (em formato .ydk) na pasta que foi aberta. Essa pasta agora fica no diretório de configuração de plugins do OBS, então suas decklists sobrevivem a atualizações e reinstalações do plugin.
     - **Minimum Out of Screen Time**: O tempo mínimo que uma carta recém detectada pode ser exibida de novo.
     - **Minimum Screen Time**: O tempo mínimo que uma carta é exibida.
     - **Confidence Threshold**: Definir o nível de confiança mínima para a detecção de uma carta. Detecções abaixo desse limite 
       serão ignoradas.
 3. O plugin irá fornecer uma nova fonte chamada `Draw Display`. Você pode adicioná-la a sua cena como qualquer outra fonte.
    Essa fonte irá exibir as cartas detectadas na tela. Você pode escolher de qual fonte/cena detectar as cartas.
+
+   Essa fonte também permite ajustar com precisão o que o detector realmente vê. Essas opções vêm **desativadas por padrão**; ative as que você precisar nas configurações do Draw 2 (ícone de engrenagem), no grupo *Recursos avançados*, e elas passarão a aparecer nas propriedades da fonte:
+    - **Detector / Player**: qual jogador (1 ou 2) essa fonte alimenta, permitindo rodar um detector por jogador ao mesmo tempo.
+    - **Crop — Left / Top / Right / Bottom**: pixels removidos de cada borda para focar a detecção em uma região da captura, sem afetar a fonte em outros lugares.
+    - **Rotate input 180°**: gira a entrada capturada antes de enviá-la ao detector (útil quando a câmera está montada de cabeça para baixo).
+
+   > 💡 O plugin também pode fornecer uma fonte **`DRAW Input Preview`** que mostra exatamente o que o detector recebe (a entrada recortada/rotacionada do jogador selecionado). Ela vem **desativada por padrão** — ative-a nas configurações do Draw 2 (*Recursos avançados*) e reinicie o OBS; depois adicione-a a uma cena de testes para ajustar o recorte e o enquadramento sem mexer na saída ao vivo `Draw Display`.
 4. Clique no botão `Start DRAW` para começar o processo de detecção. O plugin irá começar a detectar cartas em tempo real
    e exibí-las na tela usando a fonte `Draw Display`. O plugin irá começar a detectar a partir do momento que você vir o botão `Stop DRAW`. 
    Se não aparecer, algo deu errado.

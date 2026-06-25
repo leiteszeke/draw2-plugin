@@ -17,6 +17,9 @@ void init_shared_memory(draw_source_data_t *context);
 void destroy_shared_memory(draw_source_data_t *context);
 bool read_shared_memory(draw_source_data_t *context);
 void ensure_shared_memory_exists(draw_source_data_t *context, uint32_t width, uint32_t height);
+// Reads the *input* segment (what the detector receives) into the context's
+// display_texture, for the standalone "DRAW Input Preview" source.
+bool read_input_preview(draw_source_data_t *context);
 
 #ifdef __cplusplus
 }
