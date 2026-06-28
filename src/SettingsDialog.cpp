@@ -72,6 +72,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 	bool feature_crop_value = settings.value("feature_crop", false).toBool();
 	bool feature_rotate_value = settings.value("feature_rotate", false).toBool();
 	bool feature_input_preview_value = settings.value("feature_input_preview", false).toBool();
+	bool feature_card_info_value = settings.value("feature_card_info", false).toBool();
 
 	auto *layout = new QVBoxLayout(this);
 
@@ -159,10 +160,12 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 	this->feature_crop->setChecked(feature_crop_value);
 	this->feature_rotate->setChecked(feature_rotate_value);
 	this->feature_input_preview->setChecked(feature_input_preview_value);
+	this->feature_card_info->setChecked(feature_card_info_value);
 	layout->addWidget(this->feature_channel);
 	layout->addWidget(this->feature_crop);
 	layout->addWidget(this->feature_rotate);
 	layout->addWidget(this->feature_input_preview);
+	layout->addWidget(this->feature_card_info);
 
 	this->ok_button->setProperty("class", "QPushButton");
 	this->cancel_button->setProperty("class", "QPushButton");
@@ -218,6 +221,7 @@ void SettingsDialog::OkButtonClicked()
 	settings.setValue("feature_crop", this->feature_crop->isChecked());
 	settings.setValue("feature_rotate", this->feature_rotate->isChecked());
 	settings.setValue("feature_input_preview", this->feature_input_preview->isChecked());
+	settings.setValue("feature_card_info", this->feature_card_info->isChecked());
 	this->close();
 }
 

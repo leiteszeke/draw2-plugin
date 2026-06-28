@@ -231,6 +231,21 @@ When the plugin is installed and the model weights are downloaded, you can launc
    > (the cropped/rotated input for the selected player). It is **off by default** — enable it in the Draw 2 settings
    > (*Advanced features*) and restart OBS, then add it to a scratch scene to dial in the crop and framing without
    > touching the live `Draw Display` output.
+
+   > 💡 The plugin can also **export detected card info to files** so you can show it anywhere — an OBS Text source the
+   > streamer reads on stream, bots, or HTML/browser overlays. It is **off by default** — enable *Export detected card
+   > info to files* in the Draw 2 settings (*Advanced features*) and restart DRAW. While running, each detector writes
+   > to `plugin_config/draw2-plugin/state/` (per player `N`):
+   > - `current_pN.json` — cards currently on screen:
+   >   `{ "updated_at", "channel", "cards": [ { "id", "name", "type", "attribute", "race", "atk", "def", "desc" } ] }`
+   >   (rich fields come from YGOPRODeck; missing fields are omitted).
+   > - `events_pN.jsonl` — append-only log, one JSON per line:
+   >   `{ "ts", "event": "appeared" | "disappeared", "card": { … } }`.
+   > - `current_card_pN.txt` — plain text, names of the cards on screen (newline-separated). Point an OBS **Text**
+   >   source at this file (*Read from file*) to show the current card live.
+   >
+   > Metadata language defaults to English; set the `card_info_lang` key in the Draw 2 settings store to one of
+   > `en` / `fr` / `de` / `it` / `pt` (YGOPRODeck does not provide Spanish).
 4. Click the `Start DRAW` button to start the detection process. The plugin will start detecting cards in real time
    and display them on the screen using the `Draw Display` source. The plugin start detecting from the moment you see
    the

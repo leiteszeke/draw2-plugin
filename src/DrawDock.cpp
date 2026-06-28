@@ -3,10 +3,12 @@
 //
 
 #include "plugin-path.h"
+#include "feature_flags.h"
 
 #include "DrawDock.hpp"
 #include "SettingsDialog.hpp"
 
+#include <QProcessEnvironment>
 #include <QSettings>
 #include <QFileInfo>
 #include <QStringList>
@@ -212,6 +214,16 @@ void DrawDock::StartChannel(int channel, const QString &python_exe)
 	args << "-u" << "-c" << QString::fromUtf8(kBackendScript) << QString::number(model_choice) << deck_list
 	     << QString::number(min_out) << QString::number(min_screen) << QString::number(confidence)
 	     << QString::number(channel);
+
+	// Opt-in: export structured card info to files for OBS Text sources / bots /
+	// overlays. When off, set nothing so the backend behaves exactly as upstream.
+	const char *state_dir = draw_feature_enabled(FEATURE_CARD_INFO) ? get_state_path() : nullptr;
+	if (state_dir) {
+		QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+		env.insert("DRAW2_CARD_INFO_DIR", QString::fromUtf8(state_dir));
+		env.insert("DRAW2_CARD_INFO_LANG", settings.value("card_info_lang", "en").toString());
+		process->setProcessEnvironment(env);
+	}
 
 	blog(LOG_INFO, "Draw2: launching backend P%d: %s", channel, python_exe.toUtf8().constData());
 	process->start(python_exe, args);
