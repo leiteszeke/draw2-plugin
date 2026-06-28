@@ -39,15 +39,32 @@ No source files change; no behavior change.
 
 ## How it was tested
 
-- `cmake --preset macos -DCMAKE_OSX_ARCHITECTURES=arm64` +
-  `cmake --build build_macos` → **build succeeds**, produces
-  `build_macos/<config>/draw2-plugin.plugin` (previously failed at link with
-  `framework 'AGL' not found`).
-- Plugin bundle copied into the OBS plugins folder; OBS launches and the
-  **`Draw 2`** dock appears in the `Docks` menu.
+Environment: macOS 26 (Apple Silicon), Xcode 16+ / clang 17+, OBS Studio 32.1.1.
 
-> Screenshots: see `screenshots/` (terminal build success; OBS `Docks` menu
-> with `Draw 2`; the `Draw 2` dock open).
+**Build from source** — `cmake --preset macos -DCMAKE_OSX_ARCHITECTURES=arm64`
+then `cmake --build build_macos` → **build succeeds** and produces
+`build_macos/<config>/draw2-plugin.plugin`. (On `master` the same build fails
+at link with `ld: framework 'AGL' not found`.)
+
+![Build succeeds](screenshots/01-build-ok.png)
+
+**Loads in OBS** — the bundle was copied into the OBS plugins folder; OBS
+launches cleanly and registers the dock: **`Draw 2`** appears (checked) in the
+`Docks` menu.
+
+![Draw 2 in the Docks menu](screenshots/02-docks-menu.png)
+
+**Dock opens** — activating it shows the `Draw 2` dock (with the `Start DRAW`
+control) docked alongside the scene.
+
+![Draw 2 dock open](screenshots/03-dock-open.png)
+
+**Cross-platform:** Windows and Linux are unaffected — every change is inside
+`if(APPLE)`, so their CMake configuration is identical to `master`. <!-- TODO: link the 3-platform CI run once green -->
+
+<!-- When opening the PR on GitHub, drag the three files from
+docs/pr/01-macos-build-fix/screenshots/ into the description so GitHub hosts
+them; the relative paths above are for the in-repo copy. -->
 
 ## Notes for reviewers
 
