@@ -28,14 +28,17 @@ installed.
 - **`CMakeLists.txt`** — drop `find_package(Python3)` and the include/link
   step. The plugin no longer embeds an interpreter.
 - **`src/DrawDock.{cpp,hpp}`** — launch the backend with `QProcess`; stream its
-  stdout into a **log panel** in the dock; manage **per-player deck lists** from
-  a `decklists` folder in the OBS plugin config dir; start/stop lifecycle.
+  stdout into a **log panel** in the dock; manage **deck lists** from a
+  `decklists` folder in the OBS plugin config dir; start/stop lifecycle.
 - **`src/shared_memory_wrapper.cpp`** — shared-memory transport between the
   plugin and the backend. Cross-platform: `shm_open`/`mmap` on Unix/macOS,
   `boost::interprocess::windows_shared_memory` on Windows (matching Python's
   `multiprocessing.shared_memory`).
 - **`src/SettingsDialog.{cpp,hpp}`** — select the Python prefix and the
-  per-player deck-list files used at launch.
+  deck-list files used at launch.
+
+> Single-player. Multi-detector / per-player support (a second detector and
+> per-player deck lists) is deferred to its own PR.
 - **`data/locale/en-US.ini`** — strings for the new dock controls.
 
 ## Cross-platform
