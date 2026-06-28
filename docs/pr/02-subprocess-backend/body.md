@@ -50,9 +50,10 @@ installed.
 ## Behaviour change (worth a maintainer's attention)
 
 The plugin no longer bundles a Python interpreter on any platform. Users now
-select a Python install that has the `draw` backend package. The user-facing
-setup documentation is added in a **follow-up docs PR** (kept separate so the
-docs describe this final subprocess model rather than the old embedded one).
+select a Python install that has the `draw` backend package. This PR updates the
+README (and all translations — `es`/`fr`/`jp`/`pt-br`) accordingly: building from
+source is now a universal build, and the macOS Python-backend setup is documented
+for this subprocess model.
 
 ## How it was tested
 
