@@ -57,15 +57,25 @@ docs describe this final subprocess model rather than the old embedded one).
 ## How it was tested
 
 Environment: macOS 26 (Apple Silicon), OBS Studio 32.1.1, a Python prefix with
-the `draw` backend (`obs-plugin` branch) installed.
+the `draw` backend installed.
 
-- **Build** — `cmake --preset macos` + `cmake --build build_macos` →
-  **universal build succeeds** (no libpython link; the previous arm64-only
-  constraint from embedding Homebrew's Python is gone). <!-- screenshot 01 -->
-- **Backend launches as a subprocess** — Start DRAW spawns the Python process;
-  its output streams into the dock log panel; the dock reports readiness and the
-  button switches to Stop DRAW. <!-- screenshot 02 -->
-- **End-to-end detection** — a card shown on the captured input is detected and
-  rendered on the `DRAW Display` source. <!-- screenshot 03 -->
+This PR's scope is the **process model**, not the detection pipeline (the
+capture + model code in `src/draw.c` is untouched here), so the test confirms
+the backend now runs out-of-process and the plugin talks to it:
 
-<!-- screenshots embedded after manual OBS test -->
+**Build** — `cmake --preset macos` + `cmake --build build_macos` → **universal
+build succeeds** (no libpython link; the previous arm64-only constraint from
+embedding Homebrew's Python is gone).
+
+![Universal build succeeds](https://raw.githubusercontent.com/leiteszeke/draw2-plugin/pr-docs/docs/pr/02-subprocess-backend/screenshots/01-build-ok.png)
+
+**Backend runs as a separate process** — Start DRAW spawns the Python backend;
+its stdout streams into the dock's log panel (impossible with an in-process
+interpreter), the plugin and backend connect over shared memory
+(`Shared memory found`), and OBS does **not** crash — the libpython/obs-scripting
+symbol clash on macOS is gone.
+
+![Backend subprocess running, shared memory connected](https://raw.githubusercontent.com/leiteszeke/draw2-plugin/pr-docs/docs/pr/02-subprocess-backend/screenshots/02-backend-log.png)
+
+> Detection itself is unchanged by this PR (same `draw.c` capture + model as
+> before), so it is not re-validated here.
