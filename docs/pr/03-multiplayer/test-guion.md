@@ -1,8 +1,8 @@
-# Guión de prueba — PR3: multi-detector (un backend por jugador)
+# Guión de prueba — PR3: two-player OPT-IN (un backend por jugador)
 
-**Qué valida:** que el plugin maneja **dos jugadores** — deck lists per-player, un selector "Detector / Player" por fuente, y **dos backends** corriendo a la vez. No depende de la detección real (se ve aunque no haya deck/cartas).
+**Qué valida:** la feature de **dos jugadores es opt-in** (OFF por defecto) y, al activarla, aparecen deck lists de Player 2, el selector "Detector / Player" en la fuente, y se lanzan **dos** detectores. No depende de la detección real.
 
-**Rama:** `up/03-multiplayer` (= #27 subprocess + multiplayer).
+**Rama:** `up/03-multiplayer`.
 
 ## Instalar
 ```bash
@@ -13,9 +13,10 @@ cp -R build_macos/*/draw2-plugin.plugin "$HOME/Library/Application Support/obs-s
 Reiniciar OBS.
 
 ## Capturas
-1. 📸 `01-settings-2players` — Settings del dock: dos filas de deck lists (Player 1 y Player 2, 6 combos).
-2. 📸 `02-channel-selector` — Fuente `DRAW Display` → Propiedades → dropdown `Detector / Player` (Player 1 / Player 2).
-3. 📸 `03-two-detectors` — Start DRAW → panel de logs con líneas `[P1]` **y** `[P2]` (dos detectores lanzados).
+1. 📸 `01-default-off` — Settings del dock TAL CUAL se abre: en **Advanced features** el toggle **"Enable two players"** está **desmarcado**, y NO hay fila de Player 2 (solo Player 1). (Esto prueba el opt-in / default single-player.)
+2. 📸 `02-toggle-on` — Marcá **"Enable two players"**: ahora aparece la fila de deck lists de **Player 2**. Captura con el toggle ON + la fila P2 visible. Dale OK.
+3. 📸 `03-channel-selector` — Fuente `DRAW Display` → Propiedades → ahora aparece el dropdown **`Detector / Player`** (Player 1 / Player 2). (Con el toggle OFF NO aparece.)
+4. 📸 `04-two-detectors` — Start DRAW → panel de logs con `[P1]` **y** `[P2]` (dos detectores).
 
 ## Reporte
-✅/❌ por paso + las 3 capturas. (Detección de cartas no es necesaria para este PR.)
+✅/❌ por paso + capturas. (Detección de cartas no es necesaria.)
