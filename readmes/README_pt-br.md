@@ -138,6 +138,27 @@ Quando o plugin está instalado e os "model weights" estão baixados, você pode
     - **Rotate input 180°**: gira a entrada capturada antes de enviá-la ao detector (útil quando a câmera está montada de cabeça para baixo).
 
    > 💡 O plugin também pode fornecer uma fonte **`DRAW Input Preview`** que mostra exatamente o que o detector recebe (a entrada recortada/rotacionada do jogador selecionado). Ela vem **desativada por padrão** — ative-a nas configurações do Draw 2 (*Recursos avançados*) e reinicie o OBS; depois adicione-a a uma cena de testes para ajustar o recorte e o enquadramento sem mexer na saída ao vivo `Draw Display`.
+
+   > 💡 O plugin também pode carregar uma decklist a partir de uma **URL HTTP(S)** em vez de um arquivo `.ydk` local —
+   > útil quando sua lista de cartas é servida por uma API remota ou sistema de gerenciamento de torneios. Vem
+   > **desativada por padrão** — ative **Enable remote decklist** nas configurações do Draw 2 (*Recursos avançados*).
+   >
+   > Dois modos estão disponíveis após a ativação:
+   > - **Import deck from URL…** (botão nas configurações) — busca a URL uma única vez e salva o resultado como um
+   >   `.ydk` normal na pasta de decklists; selecione-o no seletor de arquivos como qualquer outro deck.
+   > - **Campos de URL por slot** — uma URL opcional por slot de deck (3 slots × 2 jogadores). Quando configurada, a
+   >   URL é buscada ao vivo no Start Draw e substitui o arquivo selecionado para aquele slot; em caso de falha, o
+   >   plugin reverte automaticamente para o arquivo escolhido.
+   >
+   > Formatos de resposta aceitos pelo servidor: array JSON de IDs de carta (passcodes); objeto JSON
+   > `{ "main": [...], "extra": [...], "side": [...] }`; texto `.ydk` bruto; ou texto simples contendo IDs numéricos.
+   >
+   > Um cabeçalho de autenticação opcional (nome + valor, ex.: `Authorization` / `Bearer …`) pode ser configurado e
+   > é enviado com cada requisição.
+   >
+   > ⚠️ As URLs e o valor do cabeçalho são armazenados em texto simples no QSettings, como todas as outras
+   > configurações do plugin — evite armazenar segredos de longa duração ali.
+
 4. Clique no botão `Start DRAW` para começar o processo de detecção. O plugin irá começar a detectar cartas em tempo real
    e exibí-las na tela usando a fonte `Draw Display`. O plugin irá começar a detectar a partir do momento que você vir o botão `Stop DRAW`. 
    Se não aparecer, algo deu errado.

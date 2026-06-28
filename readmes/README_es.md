@@ -236,6 +236,27 @@ Cuando el plugin está instalado y los pesos del modelo están descargados, pued
    > detector (la entrada recortada/rotada del jugador seleccionado). Está **desactivada por defecto**: actívala en los
    > ajustes de Draw 2 (*Funciones avanzadas*) y reinicia OBS, y luego añádela a una escena de pruebas para afinar el
    > recorte y el encuadre sin tocar la salida en directo `Draw Display`.
+
+   > 💡 El plugin también puede cargar una deck list desde una **URL HTTP(S)** en lugar de un archivo `.ydk` local —
+   > muy útil cuando tu lista de cartas la sirve una API remota o un sistema de gestión de torneos. Está
+   > **desactivada por defecto** — activa **Enable remote decklist** en los ajustes de Draw 2 (*Funciones avanzadas*).
+   >
+   > Una vez activada, hay dos modos disponibles:
+   > - **Import deck from URL…** (botón en los ajustes) — descarga la URL una sola vez y guarda el resultado como
+   >   un `.ydk` normal en la carpeta de deck lists; luego puedes seleccionarlo como cualquier otro archivo.
+   > - **Campos de URL por ranura** — una URL opcional por ranura de deck (3 ranuras × 2 jugadores). Si se configura,
+   >   la URL se descarga en vivo al pulsar Start Draw y reemplaza el archivo seleccionado para esa ranura; ante
+   >   cualquier error, el plugin recurre automáticamente al archivo elegido.
+   >
+   > Formatos de respuesta aceptados del servidor: array JSON de IDs de carta (passcodes); objeto JSON
+   > `{ "main": [...], "extra": [...], "side": [...] }`; texto `.ydk` sin procesar; o texto plano con IDs numéricos.
+   >
+   > Se puede configurar una cabecera de autenticación opcional (nombre + valor, p. ej. `Authorization` /
+   > `Bearer …`) que se envía con cada solicitud.
+   >
+   > ⚠️ Las URLs y el valor de la cabecera se almacenan en texto plano en QSettings, igual que el resto de ajustes
+   > del plugin — evita guardar secretos de larga duración ahí.
+
 4. Haz clic en el botón `Start DRAW` para iniciar el proceso de detección. El plugin empezará a detectar cartas en
    tiempo real y a mostrarlas en pantalla mediante la fuente `Draw Display`. El plugin comienza a detectar en el
    momento en que ves el botón `Stop DRAW`. Si no lo ves, algo salió mal.

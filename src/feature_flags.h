@@ -27,6 +27,7 @@ bool draw_feature_enabled(const char *key);
 #define FEATURE_CROP "feature_crop"
 #define FEATURE_ROTATE "feature_rotate"
 #define FEATURE_INPUT_PREVIEW "feature_input_preview"
+#define FEATURE_REMOTE_DECK "feature_remote_deck"
 
 #ifdef __cplusplus
 }

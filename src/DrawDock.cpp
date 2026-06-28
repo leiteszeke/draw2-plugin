@@ -6,7 +6,10 @@
 
 #include "DrawDock.hpp"
 #include "SettingsDialog.hpp"
+#include "RemoteDeck.hpp"
+#include "feature_flags.h"
 
+#include <QDir>
 #include <QSettings>
 #include <QFileInfo>
 #include <QStringList>
@@ -160,9 +163,44 @@ void DrawDock::StartChannel(int channel, const QString &python_exe)
 	// Per-player deck lists: player 1 uses deck_listN, player 2 deck_listN_p2.
 	QString sfx = (channel == 2) ? "_p2" : "";
 	QString dir = QString::fromUtf8(get_decklists_path()) + "/";
-	QString deck_list = dir + settings.value("deck_list1" + sfx, "").toString() + ";" + dir +
-			    settings.value("deck_list2" + sfx, "").toString() + ";" + dir +
-			    settings.value("deck_list3" + sfx, "").toString() + ";";
+
+	const bool remote_on = draw_feature_enabled(FEATURE_REMOTE_DECK);
+	const QString header_name = settings.value("remote_header_name", "").toString();
+	const QString header_value = settings.value("remote_header_value", "").toString();
+
+	// Resolve one slot ("1", "1_p2", …): a configured URL wins; on any failure we
+	// fall back to the selected file so the other slots still start.
+	auto resolve_slot = [&](const QString &slot) -> QString {
+		const QString file_path = dir + settings.value("deck_list" + slot, "").toString();
+		if (!remote_on)
+			return file_path;
+		const QString url = settings.value("deck_url" + slot, "").toString().trimmed();
+		if (url.isEmpty())
+			return file_path;
+
+		QString error;
+		QByteArray body = remote_deck::fetch(url, header_name, header_value, error);
+		QString ydk = body.isEmpty() ? QString() : remote_deck::to_ydk(body, error);
+		if (ydk.isEmpty()) {
+			blog(LOG_ERROR, "Draw2: remote deck slot %s failed: %s", slot.toUtf8().constData(),
+			     error.toUtf8().constData());
+			AppendLog(QString("✗ remote deck (slot %1) failed: %2 — using file")
+					  .arg(slot, error));
+			return file_path;
+		}
+		QString remote_dir = QString::fromUtf8(get_decklists_path()) + "/.remote";
+		QDir().mkpath(remote_dir);
+		QString out_path = remote_dir + "/deck" + slot + ".ydk";
+		if (!remote_deck::write_ydk(out_path, ydk)) {
+			blog(LOG_ERROR, "Draw2: could not write remote deck %s", out_path.toUtf8().constData());
+			AppendLog(QString("✗ remote deck (slot %1): write failed — using file").arg(slot));
+			return file_path;
+		}
+		return out_path;
+	};
+
+	QString deck_list = resolve_slot("1" + sfx) + ";" + resolve_slot("2" + sfx) + ";" +
+			    resolve_slot("3" + sfx) + ";";
 
 	auto *process = new QProcess(this);
 	process->setProcessChannelMode(QProcess::MergedChannels);

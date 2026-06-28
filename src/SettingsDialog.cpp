@@ -2,10 +2,15 @@
 // Created by HichTala on 22/06/25.
 //
 
+#include <QFileInfo>
+#include <QGridLayout>
+#include <QInputDialog>
 #include <QLabel>
+#include <QMessageBox>
 #include <QSettings>
 
 #include "SettingsDialog.hpp"
+#include "RemoteDeck.hpp"
 
 #include "plugin-path.h"
 
@@ -72,6 +77,15 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 	bool feature_crop_value = settings.value("feature_crop", false).toBool();
 	bool feature_rotate_value = settings.value("feature_rotate", false).toBool();
 	bool feature_input_preview_value = settings.value("feature_input_preview", false).toBool();
+	bool feature_remote_deck_value = settings.value("feature_remote_deck", false).toBool();
+	QString deck_url1_v = settings.value("deck_url1", "").toString();
+	QString deck_url2_v = settings.value("deck_url2", "").toString();
+	QString deck_url3_v = settings.value("deck_url3", "").toString();
+	QString deck_url1_p2_v = settings.value("deck_url1_p2", "").toString();
+	QString deck_url2_p2_v = settings.value("deck_url2_p2", "").toString();
+	QString deck_url3_p2_v = settings.value("deck_url3_p2", "").toString();
+	QString remote_header_name_v = settings.value("remote_header_name", "").toString();
+	QString remote_header_value_v = settings.value("remote_header_value", "").toString();
 
 	auto *layout = new QVBoxLayout(this);
 
@@ -164,6 +178,51 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 	layout->addWidget(this->feature_rotate);
 	layout->addWidget(this->feature_input_preview);
 
+	this->feature_remote_deck->setChecked(feature_remote_deck_value);
+	layout->addWidget(this->feature_remote_deck);
+
+	// Remote decklist section: visible only when the feature is on.
+	{
+		auto *remote_layout = new QVBoxLayout(this->remote_section);
+		remote_layout->setContentsMargins(0, 0, 0, 0);
+
+		auto *remote_label = new QLabel(obs_module_text("remote_deck_section"), this);
+		remote_layout->addWidget(remote_label);
+
+		QLineEdit *urls[6] = {this->deck_url1,    this->deck_url2,    this->deck_url3,
+				      this->deck_url1_p2, this->deck_url2_p2, this->deck_url3_p2};
+		QString url_values[6] = {deck_url1_v,    deck_url2_v,    deck_url3_v,
+					 deck_url1_p2_v, deck_url2_p2_v, deck_url3_p2_v};
+		const char *row_labels[2] = {obs_module_text("player_1"), obs_module_text("player_2")};
+
+		auto *grid = new QGridLayout();
+		for (int p = 0; p < 2; p++) {
+			grid->addWidget(new QLabel(row_labels[p], this), p, 0);
+			for (int s = 0; s < 3; s++) {
+				QLineEdit *e = urls[p * 3 + s];
+				e->setText(url_values[p * 3 + s]);
+				e->setPlaceholderText(obs_module_text("remote_url_ph"));
+				grid->addWidget(e, p, s + 1);
+			}
+		}
+		remote_layout->addLayout(grid);
+
+		this->remote_header_name->setText(remote_header_name_v);
+		this->remote_header_name->setPlaceholderText(obs_module_text("remote_header_name_ph"));
+		this->remote_header_value->setText(remote_header_value_v);
+		this->remote_header_value->setPlaceholderText(obs_module_text("remote_header_value_ph"));
+		auto *header_layout = new QHBoxLayout();
+		header_layout->addWidget(this->remote_header_name);
+		header_layout->addWidget(this->remote_header_value);
+		remote_layout->addLayout(header_layout);
+
+		remote_layout->addWidget(this->import_url_button);
+	}
+	this->remote_section->setVisible(feature_remote_deck_value);
+	layout->addWidget(this->remote_section);
+	connect(this->feature_remote_deck, &QCheckBox::toggled, this->remote_section,
+		&QWidget::setVisible);
+
 	this->ok_button->setProperty("class", "QPushButton");
 	this->cancel_button->setProperty("class", "QPushButton");
 
@@ -178,6 +237,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 	connect(browse_button, SIGNAL(clicked()), SLOT(BrowseButtonClicked()));
 	connect(ok_button, SIGNAL(clicked()), SLOT(OkButtonClicked()));
 	connect(cancel_button, SIGNAL(clicked()), SLOT(CancelButtonClicked()));
+	connect(this->import_url_button, SIGNAL(clicked()), SLOT(ImportUrlButtonClicked()));
 	connect(this->confidence_slider, &QSlider::valueChanged,
 		[confidence_value_label](int value) { confidence_value_label->setText(QString::number(value) + "%"); });
 
@@ -218,10 +278,70 @@ void SettingsDialog::OkButtonClicked()
 	settings.setValue("feature_crop", this->feature_crop->isChecked());
 	settings.setValue("feature_rotate", this->feature_rotate->isChecked());
 	settings.setValue("feature_input_preview", this->feature_input_preview->isChecked());
+	settings.setValue("feature_remote_deck", this->feature_remote_deck->isChecked());
+	settings.setValue("deck_url1", this->deck_url1->text());
+	settings.setValue("deck_url2", this->deck_url2->text());
+	settings.setValue("deck_url3", this->deck_url3->text());
+	settings.setValue("deck_url1_p2", this->deck_url1_p2->text());
+	settings.setValue("deck_url2_p2", this->deck_url2_p2->text());
+	settings.setValue("deck_url3_p2", this->deck_url3_p2->text());
+	settings.setValue("remote_header_name", this->remote_header_name->text());
+	settings.setValue("remote_header_value", this->remote_header_value->text());
 	this->close();
 }
 
 void SettingsDialog::CancelButtonClicked()
 {
 	this->close();
+}
+
+void SettingsDialog::ImportUrlButtonClicked()
+{
+	bool ok = false;
+	QString url = QInputDialog::getText(this, obs_module_text("import_from_url"),
+					    obs_module_text("import_url_prompt"), QLineEdit::Normal,
+					    QString(), &ok);
+	if (!ok || url.trimmed().isEmpty())
+		return;
+
+	QString name = QInputDialog::getText(this, obs_module_text("import_from_url"),
+					     obs_module_text("import_name_prompt"), QLineEdit::Normal,
+					     QString(), &ok);
+	if (!ok || name.trimmed().isEmpty())
+		return;
+
+	QString error;
+	QByteArray body = remote_deck::fetch(url.trimmed(), this->remote_header_name->text(),
+					     this->remote_header_value->text(), error);
+	QString ydk = body.isEmpty() ? QString() : remote_deck::to_ydk(body, error);
+
+	if (ydk.isEmpty()) {
+		QMessageBox::warning(this, obs_module_text("import_from_url"),
+				     QString(obs_module_text("import_failed")) + " " + error);
+		return;
+	}
+
+	QString filename = QFileInfo(name.trimmed()).fileName();
+	if (filename.isEmpty()) {
+		QMessageBox::warning(this, obs_module_text("import_from_url"),
+				     QString(obs_module_text("import_failed")) + " " + name.trimmed());
+		return;
+	}
+	if (!filename.endsWith(".ydk"))
+		filename += ".ydk";
+	QString path = QString::fromUtf8(get_decklists_path()) + "/" + filename;
+	if (!remote_deck::write_ydk(path, ydk)) {
+		QMessageBox::warning(this, obs_module_text("import_from_url"),
+				     QString(obs_module_text("import_failed")) + " " + path);
+		return;
+	}
+
+	// Make the new file selectable in every combo right away.
+	QComboBox *combos[6] = {this->deck_list1,    this->deck_list2,    this->deck_list3,
+				this->deck_list1_p2, this->deck_list2_p2, this->deck_list3_p2};
+	for (QComboBox *c : combos) {
+		if (c->findText(filename, Qt::MatchExactly) == -1)
+			c->addItem(filename);
+	}
+	QMessageBox::information(this, obs_module_text("import_from_url"), obs_module_text("import_ok"));
 }

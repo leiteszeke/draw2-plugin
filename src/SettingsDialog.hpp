@@ -42,6 +42,18 @@ private:
 	QCheckBox *feature_crop = new QCheckBox(obs_module_text("feature_crop"));
 	QCheckBox *feature_rotate = new QCheckBox(obs_module_text("feature_rotate"));
 	QCheckBox *feature_input_preview = new QCheckBox(obs_module_text("feature_input_preview"));
+	QCheckBox *feature_remote_deck = new QCheckBox(obs_module_text("feature_remote_deck"));
+	// Remote decklist (opt-in). Per-slot URLs override the file when non-empty.
+	QLineEdit *deck_url1 = new QLineEdit();
+	QLineEdit *deck_url2 = new QLineEdit();
+	QLineEdit *deck_url3 = new QLineEdit();
+	QLineEdit *deck_url1_p2 = new QLineEdit();
+	QLineEdit *deck_url2_p2 = new QLineEdit();
+	QLineEdit *deck_url3_p2 = new QLineEdit();
+	QLineEdit *remote_header_name = new QLineEdit();
+	QLineEdit *remote_header_value = new QLineEdit();
+	QPushButton *import_url_button = new QPushButton(obs_module_text("import_from_url"));
+	QWidget *remote_section = new QWidget();
 	QPushButton *python_browse_button = new QPushButton(obs_module_text("browse"));
 	QPushButton *browse_button = new QPushButton(obs_module_text("open_folder"));
 	QPushButton *ok_button = new QPushButton(obs_module_text("ok"));
@@ -57,6 +69,7 @@ private slots:
 	void BrowseButtonClicked();
 	void OkButtonClicked();
 	void CancelButtonClicked();
+	void ImportUrlButtonClicked();
 };
 
 #endif //SETTINGSPOPUP_HPP

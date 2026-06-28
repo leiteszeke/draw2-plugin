@@ -159,6 +159,29 @@ Une fois le plugin installé et les poids du modèle téléchargés, vous pouvez
    > reçoit (l'entrée recadrée/pivotée pour le joueur sélectionné). Elle est **désactivée par défaut** : activez-la dans
    > les paramètres de Draw 2 (*Fonctionnalités avancées*) puis redémarrez OBS, et ajoutez-la ensuite à une scène de
    > test pour ajuster le recadrage et le cadrage sans toucher à la sortie `Draw Display` en direct.
+
+   > 💡 Le plugin peut également charger une deck list depuis une **URL HTTP(S)** plutôt qu'un fichier `.ydk` local —
+   > pratique lorsque votre liste de cartes est servie par une API distante ou un système de gestion de tournoi. Cette
+   > fonctionnalité est **désactivée par défaut** — activez **Enable remote decklist** dans les paramètres de Draw 2
+   > (*Fonctionnalités avancées*).
+   >
+   > Deux modes sont disponibles une fois activé :
+   > - **Import deck from URL…** (bouton dans les paramètres) — récupère l'URL une seule fois et enregistre le résultat
+   >   comme un fichier `.ydk` normal dans le dossier des deck lists ; sélectionnez-le ensuite comme n'importe quel autre
+   >   fichier.
+   > - **Champs d'URL par slot** — une URL optionnelle par slot de deck (3 slots × 2 joueurs). Si renseignée, l'URL est
+   >   récupérée en direct au clic sur Start Draw et remplace le fichier sélectionné pour ce slot ; en cas d'échec, le
+   >   plugin revient automatiquement au fichier choisi.
+   >
+   > Formats de réponse acceptés : tableau JSON d'ID de carte (passcodes) ; objet JSON
+   > `{ "main": [...], "extra": [...], "side": [...] }` ; texte `.ydk` brut ; ou texte brut contenant des ID numériques.
+   >
+   > Un en-tête d'authentification optionnel (nom + valeur, p. ex. `Authorization` / `Bearer …`) peut être configuré
+   > et est envoyé avec chaque requête.
+   >
+   > ⚠️ Les URLs et la valeur de l'en-tête sont stockées en texte brut dans QSettings, comme tous les autres paramètres
+   > du plugin — évitez d'y placer des secrets à longue durée de vie.
+
 4. Cliquez sur le bouton `Start DRAW` pour lancer le processus de détection. Le plugin commencera à détecter les cartes
    en temps réel
    et les affichera à l'écran à l'aide de la source `Draw Display`. Le plugin commence la détection dès que le bouton

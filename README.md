@@ -231,6 +231,27 @@ When the plugin is installed and the model weights are downloaded, you can launc
    > (the cropped/rotated input for the selected player). It is **off by default** — enable it in the Draw 2 settings
    > (*Advanced features*) and restart OBS, then add it to a scratch scene to dial in the crop and framing without
    > touching the live `Draw Display` output.
+
+   > 💡 The plugin can also load a decklist from an **HTTP(S) URL** instead of a local `.ydk` file — handy when
+   > your deck list is served by a remote API or tournament system. It is **off by default** — enable
+   > **Enable remote decklist** in Draw 2 settings (*Advanced features*).
+   >
+   > Two modes are available once enabled:
+   > - **Import deck from URL…** (button in settings) — fetches the URL once and writes the result as a normal
+   >   `.ydk` into the decklists folder; pick it from the file selector like any other deck.
+   > - **Per-slot URL fields** — one optional URL per deck slot (3 slots × 2 players). When set, the URL is
+   >   fetched live at Start Draw and overrides the selected file for that slot; on any failure the plugin falls
+   >   back to the chosen file automatically.
+   >
+   > Accepted server response formats: JSON array of card IDs (passcodes); JSON object
+   > `{ "main": [...], "extra": [...], "side": [...] }`; raw `.ydk` text; or plain text containing numeric IDs.
+   >
+   > An optional auth header (name + value, e.g. `Authorization` / `Bearer …`) can be configured and is sent
+   > with every request.
+   >
+   > ⚠️ URLs and the header value are stored in plain text in QSettings, like all other plugin settings —
+   > avoid placing long-lived secrets there.
+
 4. Click the `Start DRAW` button to start the detection process. The plugin will start detecting cards in real time
    and display them on the screen using the `Draw Display` source. The plugin start detecting from the moment you see
    the
