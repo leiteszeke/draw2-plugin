@@ -45,6 +45,8 @@ private:
 	QCheckBox *feature_crop = new QCheckBox(obs_module_text("feature_crop"));
 	QCheckBox *feature_debug = new QCheckBox(obs_module_text("feature_debug"));
 	QCheckBox *feature_remote_deck = new QCheckBox(obs_module_text("feature_remote_deck"));
+	QCheckBox *feature_card_info = new QCheckBox(obs_module_text("feature_card_info"));
+	QCheckBox *feature_card_info_db = new QCheckBox(obs_module_text("feature_card_info_db"));
 	// Remote decklist (opt-in): one URL per player, replacing the file selectors.
 	QLineEdit *deck_url1 = new QLineEdit();
 	QLineEdit *deck_url1_p2 = new QLineEdit();
