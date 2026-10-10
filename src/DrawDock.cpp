@@ -189,12 +189,10 @@ void DrawDock::StartChannel(int channel, const QString &python_exe)
 	QStringList args;
 
 	args << "-u" << "-m" << "draw"
-	<< "--model_size" << QString::number(model_choice)
-	<< "--deck_list" << deck_list
-	<< "--minimum_out_of_screen_time" << QString::number(min_out)
-	<< "--minimum_screen_time" << QString::number(min_screen)
-	<< "--confidence_threshold" << QString::number(confidence)
-	<< "--channel" << QString::number(channel);
+	     << "--model_size" << QString::number(model_choice) << "--deck_list" << deck_list
+	     << "--minimum_out_of_screen_time" << QString::number(min_out) << "--minimum_screen_time"
+	     << QString::number(min_screen) << "--confidence_threshold" << QString::number(confidence) << "--channel"
+	     << QString::number(channel);
 
 	blog(LOG_INFO, "Draw2: launching backend P%d: %s", channel, python_exe.toUtf8().constData());
 	process->start(python_exe, args);
