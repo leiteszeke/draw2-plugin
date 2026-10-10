@@ -92,11 +92,11 @@ Siga a instrução de instalação dependendo do seu sistema operacional para qu
 <details open>
 <summary>🪟 Windows</summary>
 
-1. Baixe o instalador do plugin deste 
+1. Baixe o instalador do plugin deste
    link: [DRAW2 Plugin Installer](https://github.com/HichTala/draw2-plugin/releases/download/0.2.1/draw2-plugin-installer.exe)
 2. Execute o instalador e siga as instruções na tela.
-3. Assim que a instalação estiver concluída, execute o OBS Studio. Se tudo foi configurado corretamente, 
-   deve-se ver no menu `Painéis` uma nova opção chamada `Draw 2`. 
+3. Assim que a instalação estiver concluída, execute o OBS Studio. Se tudo foi configurado corretamente,
+   deve-se ver no menu `Painéis` uma nova opção chamada `Draw 2`.
    Você pode ativar o painel e colocá-lo onde quiser.
 
    O download foi concluído!
@@ -105,18 +105,93 @@ Siga a instrução de instalação dependendo do seu sistema operacional para qu
 <details>
 <summary>🐧 Linux</summary>
 
-Em Breve.™ 👀
+1. Baixe o instalador do plugin deste link:
+   [DRAW2 Plugin Installer](https://github.com/HichTala/draw2-plugin/releases/download/0.2.1/draw2-plugin-0.2.1-x86_64-linux-gnu.deb)
+
+2. Execute o instalador clicando duas vezes nele e depois em instalar _OU_ executando o comando:
+
+   ```shell
+   sudo apt install ./draw2-plugin-0.2.1-x86_64-linux-gnu.deb
+   ```
+
+3. Assim que a instalação estiver concluída, execute o OBS Studio. Se tudo foi configurado corretamente, deve-se ver
+   no menu `Painéis` uma nova opção chamada `Draw 2`. Você pode ativar o painel e colocá-lo onde quiser. A instalação
+   ainda não está completa: o plugin está instalado, mas você ainda precisa instalar o backend Python. Feche o OBS e
+   siga os próximos passos.
+
+4. Se você já tem uma instalação do Python que quer usar, pode pular este passo. Qualquer instalação do Python com o
+   pacote `draw` instalado pode funcionar. Vamos usar um CPython autônomo. Uma build relocável do
+   [python-build-standalone](https://github.com/astral-sh/python-build-standalone):
+
+   ```shell
+   # escolha a build install_only para a sua arquitetura (x86_64 para CPUs Intel e AMD)
+   curl -fL -o python.tar.gz https://github.com/astral-sh/python-build-standalone/releases/download/20261009/cpython-3.13.16+20261009-x86_64-unknown-linux-gnu-install_only.tar.gz
+   mkdir -p ~/.draw2-runtime && tar -xzf python.tar.gz -C ~/.draw2-runtime
+   ```
+
+5. Instale o backend `draw` (certifique-se de que o [git](https://git-scm.com/install/linux) está instalado):
+
+   ```shell
+   ~/.draw2-runtime/python/bin/python -m pip install "git+https://github.com/HichTala/draw2@obs-plugin"
+   ```
+
+6. Nos ajustes do Draw 2, defina **Select Python installation** como a pasta do prefixo
+   (a que contém `bin/` e `lib/`), p. ex. `~/.draw2-runtime/python`.
+   Estrutura esperada:
+
+   ```text
+   <prefix>/bin/python
+   <prefix>/lib/python3.13/site-packages/draw
+   ```
+
+A instalação foi concluída, aproveite a detecção!
 </details>
 
 <details>
 <summary>🍏 MacOS</summary>
 
-Não sou tão familiar com o OBS no MacOS para fornecer um guida de instalação confiável.
-O plugin é capaz de compilar com sucesso no MacOS mas não testei ele completamente.
-Se você tem experiência com plugins do OBS no MacOS e gostaria de contribuir com um guia de instalação, 
-sinta-se livre para enviar um pull request.
+1. Baixe o instalador do plugin deste link:
+   [DRAW2 Plugin Installer]() (a build para macOS ainda não foi lançada, estamos trabalhando nisso e ela será lançada
+   em breve; enquanto isso, você ainda pode usar o plugin compilando-o a partir do código-fonte, veja a seção
+   [Building from source](../README.md) do README em inglês)
 
-> ℹ️ No macOS, o backend Python roda como um **processo separado** (o plugin não embute mais um interpretador). Em **Select Python installation**, aponte para um prefixo Python que tenha o pacote `draw` instalado a partir do branch **`obs-plugin`** (`pip install "git+https://github.com/HichTala/draw2@obs-plugin"`). Qualquer Python 3 recente funciona — não precisa corresponder à versão do plugin. Veja a seção macOS do [README em inglês](../README.md) para os passos completos de compilação e configuração.
+2. Execute o instalador clicando duas vezes nele. Você verá um aviso dizendo que a Apple não conseguiu verificar o
+   plugin; feche-o (`Done`), vá para os ajustes do sistema e procure por `Privacidade e Segurança`
+   (`Privacy & Security`). Role para baixo até ver `"draw2-plugin....pkg" was blocked to protect your Mac` (a mensagem
+   pode aparecer no seu idioma), clique em `Abrir Mesmo Assim` (`Open Anyway`), clique em `Abrir Mesmo Assim` de novo e
+   siga as instruções na tela.
+
+3. Assim que a instalação estiver concluída, execute o OBS Studio. Se tudo foi configurado corretamente, deve-se ver
+   no menu `Painéis` uma nova opção chamada `Draw 2`. Você pode ativar o painel e colocá-lo onde quiser. A instalação
+   ainda não está completa: o plugin está instalado, mas você ainda precisa instalar o backend Python. Feche o OBS e
+   siga os próximos passos.
+
+4. Se você já tem uma instalação do Python que quer usar, pode pular este passo. Qualquer instalação do Python com o
+   pacote `draw` instalado pode funcionar. Vamos usar um CPython autônomo. Uma build relocável do
+   [python-build-standalone](https://github.com/astral-sh/python-build-standalone):
+
+   ```shell
+   # escolha a build install_only para a sua arquitetura (aarch64 para Apple Silicon)
+   curl -fL -o python.tar.gz https://github.com/astral-sh/python-build-standalone/releases/download/20261009/cpython-3.13.16+20261009-aarch64-apple-darwin-install_only.tar.gz
+   mkdir -p ~/.draw2-runtime && tar -xzf python.tar.gz -C ~/.draw2-runtime
+   ```
+
+5. Instale o backend `draw` (certifique-se de que o [git](https://git-scm.com/install/mac) está instalado):
+
+   ```shell
+   ~/.draw2-runtime/python/bin/python -m pip install "git+https://github.com/HichTala/draw2@obs-plugin"
+   ```
+
+6. Nos ajustes do Draw 2, defina **Select Python installation** como a pasta do prefixo
+   (a que contém `bin/` e `lib/`), p. ex. `~/.draw2-runtime/python`.
+   Estrutura esperada:
+
+   ```text
+   <prefix>/bin/python
+   <prefix>/lib/python3.13/site-packages/draw
+   ```
+
+A instalação foi concluída, aproveite a detecção!
 </details>
 
 ### 🚀 Uso
@@ -125,16 +200,18 @@ Quando o plugin está instalado e os "model weights" estão baixados, você pode
 
 1. Abra o menu `Painéis` e selecione `Draw 2` para ativar o painel do plugin.
 2. No painel do Draw 2, você pode configurar os ajustes clicando no ícone de engrenagem ao lado do botão `Start DRAW`:
-    - **Select Deck List**: Escolha o arquivo de decklist que contenha as cartas que você quer detectar. 3 decklists podem ser usadas ao mesmo tempo. 
-      Para adicionar novas decklists, você pode clicar no botão `Open Folder` e arrastar suas decklists (em formato .ydk) na pasta que foi aberta.
-    - **Minimum Out of Screen Time**: O tempo mínimo que uma carta recém detectada pode ser exibida de novo.
-    - **Minimum Screen Time**: O tempo mínimo que uma carta é exibida.
-    - **Confidence Threshold**: Definir o nível de confiança mínima para a detecção de uma carta. Detecções abaixo desse limite 
-      serão ignoradas.
+   - **Select Python installation**: Caminho para o prefixo do Python que tem o backend `draw` instalado (a pasta que
+     contém `bin/` e `lib/`). Deve ser uma instalação completa do Python, não um virtualenv.
+   - **Select Deck List**: Escolha o arquivo de decklist que contenha as cartas que você quer detectar. 3 decklists podem ser usadas ao mesmo tempo.
+     Para adicionar novas decklists, você pode clicar no botão `Open Folder` e arrastar suas decklists (em formato .ydk) na pasta que foi aberta.
+   - **Minimum Out of Screen Time**: O tempo mínimo que uma carta recém detectada pode ser exibida de novo.
+   - **Minimum Screen Time**: O tempo mínimo que uma carta é exibida.
+   - **Confidence Threshold**: Definir o nível de confiança mínima para a detecção de uma carta. Detecções abaixo desse limite
+     serão ignoradas.
 3. O plugin irá fornecer uma nova fonte chamada `Draw Display`. Você pode adicioná-la a sua cena como qualquer outra fonte.
    Essa fonte irá exibir as cartas detectadas na tela. Você pode escolher de qual fonte/cena detectar as cartas.
 4. Clique no botão `Start DRAW` para começar o processo de detecção. O plugin irá começar a detectar cartas em tempo real
-   e exibí-las na tela usando a fonte `Draw Display`. O plugin irá começar a detectar a partir do momento que você vir o botão `Stop DRAW`. 
+   e exibí-las na tela usando a fonte `Draw Display`. O plugin irá começar a detectar a partir do momento que você vir o botão `Stop DRAW`.
    Se não aparecer, algo deu errado.
 5. Dando tudo certo, aproveite o plugin!
 
@@ -142,6 +219,12 @@ Aqui está uma pequena prévia :)
 <div align="center">
     <img src="https://raw.githubusercontent.com/HichTala/draw2/refs/heads/main/docs/assets/overview.gif" width="960" height="540" />
 </div>
+
+### ⚙️ Compilando a partir do código-fonte
+
+> As instruções para compilar o plugin a partir do código-fonte (Windows, Linux e macOS), incluindo a configuração
+> do backend Python, estão disponíveis apenas em inglês. Consulte a seção **Building from source** do
+> [README em inglês](../README.md).
 
 ---
 ## <div align="center">🔍Visão Geral do Método</div>

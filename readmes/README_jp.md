@@ -23,7 +23,9 @@ DRAW 2（**D**etect and **R**ecognize **A** **W**ide range of cards version 2の
 Pythonバックエンドのプロジェクトは[こちら](https://github.com/HichTala/draw2)で公開されています。
 
 このプロジェクトは[GNU Affero General Public License v3.0](https://github.com/HichTala/draw2-plugin/blob/master/LICENCE)のもとで公開されており、どなたでも参加できます！
+
 ---
+
 ## <div align="center">📰 ニュース</div>
 
 > 🃏 **対応している最新の拡張機能:** `CORI` --- 最終更新日 `13-06-2026`  
@@ -43,33 +45,83 @@ OSに応じた手順に従ってセットアップしてください。
 1. プラグインのインストーラーを[こちら](https://github.com/HichTala/draw2-plugin/releases/download/0.2.1/draw2-plugin-installer.exe)からダウンロードします。
 2. インストーラーを実行し、画面の指示に従ってください。
 3. インストールが完了したらOBS Studioを起動します。`Docks` メニューに `Draw 2` が表示されるので、有効化して好きな位置に配置します。
-4. まだインストールは完了していません。DRAW 2のモデルウェイトをダウンロードする必要があります。OBS Studioを閉じ、プラグインがインストールされたフォルダを開きます（デフォルト:`C:\Program Files\draw2`）。`python` フォルダを開き、右クリックして「ターミナルで開く」を選択します。
-5. ターミナルで以下のコマンドを実行し、モデルウェイトをダウンロードします。
 
-   ```
-   ./python.exe -c "import draw;draw.run()"
-   ```
+インストールは完了です。検出をお楽しみください！
 
-6. 以下のメッセージが表示されたらダウンロード完了です。OBS Studioを再起動してください。
-
-   ```
-   Running Draw2 without OBS shared memory
-   Waiting for OBS to start...
-   ```
 </details>
+
 <details>
 <summary>🐧 Linux</summary>
 
-準備中です 👀
+1. プラグインのインストーラーを[こちら](https://github.com/HichTala/draw2-plugin/releases/download/0.2.1/draw2-plugin-0.2.1-x86_64-linux-gnu.deb)からダウンロードします。
+
+2. インストーラーをダブルクリックして「インストール」をクリックするか、次のコマンドを実行します。
+
+   ```shell
+   sudo apt install ./draw2-plugin-0.2.1-x86_64-linux-gnu.deb
+   ```
+
+3. インストールが完了したらOBS Studioを起動します。`Docks` メニューに `Draw 2` が表示されます。ただし、インストールはまだ完了していません。プラグインはインストールされましたが、Pythonバックエンドのインストールが必要です。OBS Studioを閉じて、次の手順に進んでください。
+
+4. 使いたいPythonがすでにある場合は、この手順は不要です。`draw2` パッケージがインストールされたPythonであれば動作します。ここでは、自己完結型のCPythonを使用します（[python-build-standalone](https://github.com/astral-sh/python-build-standalone)）。
+
+   ```shell
+   # お使いのアーキテクチャに合った install_only ビルドを選んでください（IntelおよびAMDのCPUの場合は x86_64）
+   curl -fL -o python.tar.gz https://github.com/astral-sh/python-build-standalone/releases/download/20261009/cpython-3.13.16+20261009-x86_64-unknown-linux-gnu-install_only.tar.gz
+   mkdir -p ~/.draw2-runtime && tar -xzf python.tar.gz -C ~/.draw2-runtime
+   ```
+
+5. `draw` バックエンドをインストールします（[git](https://git-scm.com/install/linux)がインストールされていることを確認してください）。
+
+   ```shell
+   ~/.draw2-runtime/python/bin/python -m pip install "git+https://github.com/HichTala/draw2@obs-plugin"
+   ```
+
+6. Draw 2の設定で、**Pythonインストールの選択** にプレフィックスフォルダ（`bin/` と `lib/` を含むフォルダ）を指定します。例：`~/.draw2-runtime/python`
+   期待されるフォルダ構成：
+
+   ```text
+   <prefix>/bin/python
+   <prefix>/lib/python3.13/site-packages/draw
+   ```
+
+インストールは完了です。検出をお楽しみください！
 
 </details>
 
 <details>
 <summary>🍏 MacOS</summary>
 
-MacOSでのOBSプラグインに詳しくないため、信頼性のあるインストールガイドを提供できません。MacOSでのコンパイルは成功していますが、十分なテストを行っていません。MacOSでのOBSプラグインに詳しい方がいれば、インストールガイドの作成にぜひ協力ください。Pull Requestをお待ちしています。
+1. プラグインのインストーラーを[こちら]()からダウンロードします（macOS版はまだリリースされていません。現在開発中で、まもなく公開予定です。それまではソースからビルドしてご利用いただけます。[英語版README](../README.md)の **Building from source** セクションを参照してください）。
 
-> ℹ️ macOSでは、Pythonバックエンドは**別プロセス**として動作します（プラグインはインタープリタを埋め込みません）。**Select Python installation** に、`draw` パッケージを **`obs-plugin`** ブランチからインストールした Python プレフィックスを指定してください（`pip install "git+https://github.com/HichTala/draw2@obs-plugin"`）。最近の Python 3 であれば動作し、プラグインのバージョンに一致させる必要はありません。ビルドとセットアップの詳細は[英語版README](../README.md)のmacOSセクションを参照してください。
+2. インストーラーをダブルクリックして実行します。Appleがプラグインを検証できなかった旨のポップアップが表示されるので閉じます（`Done`）。次にシステム設定を開き、`プライバシーとセキュリティ`（`Privacy & Security`）を検索します。下にスクロールして `"draw2-plugin....pkg" was blocked to protect your Mac`（お使いの言語で表示される場合があります）を見つけ、`このまま開く`（`Open Anyway`）を2回クリックし、画面の指示に従ってください。
+
+3. インストールが完了したらOBS Studioを起動します。`Docks` メニューに `Draw 2` が表示されます。ただし、インストールはまだ完了していません。プラグインはインストールされましたが、Pythonバックエンドのインストールが必要です。OBS Studioを閉じて、次の手順に進んでください。
+
+4. 使いたいPythonがすでにある場合は、この手順は不要です。`draw2` パッケージがインストールされたPythonであれば動作します。ここでは、自己完結型のCPythonを使用します（[python-build-standalone](https://github.com/astral-sh/python-build-standalone)）。
+
+   ```shell
+   # お使いのアーキテクチャに合った install_only ビルドを選んでください（Apple Siliconの場合は aarch64）
+   curl -fL -o python.tar.gz https://github.com/astral-sh/python-build-standalone/releases/download/20261009/cpython-3.13.16+20261009-aarch64-apple-darwin-install_only.tar.gz
+   mkdir -p ~/.draw2-runtime && tar -xzf python.tar.gz -C ~/.draw2-runtime
+   ```
+
+5. `draw` バックエンドをインストールします（[git](https://git-scm.com/install/mac)がインストールされていることを確認してください）。
+
+   ```shell
+   ~/.draw2-runtime/python/bin/python -m pip install "git+https://github.com/HichTala/draw2@obs-plugin"
+   ```
+
+6. Draw 2の設定で、**Pythonインストールの選択** にプレフィックスフォルダ（`bin/` と `lib/` を含むフォルダ）を指定します。例：`~/.draw2-runtime/python`
+   期待されるフォルダ構成：
+
+   ```text
+   <prefix>/bin/python
+   <prefix>/lib/python3.13/site-packages/draw
+   ```
+
+インストールは完了です。検出をお楽しみください！
+
 </details>
 
 ### 🚀 使い方
@@ -78,13 +130,14 @@ MacOSでのOBSプラグインに詳しくないため、信頼性のあるイン
 
 1. `Docks` メニューから `Draw 2` を選択し、プラグインドックを有効化します。
 2. Draw 2ドック内で、`Start DRAW` ボタン横の歯車アイコンをクリックして設定を行います。
+   * **Pythonインストールの選択**:`draw` バックエンドがインストールされたPythonプレフィックス（`bin/` と `lib/` を含むフォルダ）のパスを指定します。仮想環境（virtualenv）ではなく、完全なPythonインストールである必要があります。詳細は上記のLinux/macOSのインストール手順を参照してください。
    * **デッキリストの選択**:検出したいカードが含まれるデッキリストファイルを選択します。同時に3つのデッキリストを扱えます。新しいデッキリストを追加するには、`Open Folder` ボタンをクリックし、ydk形式のファイルをフォルダにドラッグアンドドロップします。
    * **画面外表示の最小時間**:検出されたカードが再表示されるまでの最小時間を設定します。
    * **画面表示の最小時間**:カードが表示される最小時間を設定します。
    * **信頼度の閾値**:カード検出の最小信頼度を設定します。この閾値以下の検出は無視されます。
 3. プラグインは `Draw Display` という新しいソースを提供します。シーンに追加すると、検出されたカードが画面上に表示されます。どのソースやシーンからカードを検出するか選択できます。
-4. `Start DRAW` ボタンをクリックして検出を開始します。プラグインはリアルタイムでカードを検出し、`Draw Display` ソースを使って画面に表示します。
-5. プラグインをお楽しみください！
+4. `Start DRAW` ボタンをクリックして検出を開始します。プラグインはリアルタイムでカードを検出し、`Draw Display` ソースを使って画面に表示します。`Stop DRAW` ボタンが表示された時点から検出が始まります。表示されない場合は、何か問題が発生しています。
+5. 問題がなければ、プラグインをお楽しみください！
 
 ちょっとだけご紹介します :)
 <div align="center">

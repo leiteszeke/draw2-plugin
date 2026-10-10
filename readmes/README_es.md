@@ -34,7 +34,7 @@ bienvenidas!
 
 ## <div align="center">📰 Novedades</div>
 
-> 🃏 **Último pool de cartas:** `BLZD` --- última actualización `18-05-2026`
+> 🃏 **Último pool de cartas:** `CORI` --- última actualización `13-06-2026`
 > 🔧 **Última versión de la app:** `0.2.1-beta` --- última actualización `01-06-2026`
 
 <table>
@@ -42,6 +42,11 @@ bienvenidas!
     <th>Fecha</th>
     <th>Tipo</th>
     <th>Descripción</th>
+  </tr>
+  <tr> 
+    <td><b>13-06-2026</b></td>
+    <td>🃏 Pool de cartas</td>
+    <td>Pool de cartas actualizado --- ahora admite cartas hasta <i>Chaos Origins</i></td>
   </tr>
   <tr>
     <td><b>01-06-2026</b></td>
@@ -99,85 +104,37 @@ Sigue las instrucciones de instalación según tu sistema operativo para que tod
 <details>
 <summary>🐧 Linux</summary>
 
-Próximamente 👀
+1. Descarga el instalador del plugin desde este enlace:
+   [DRAW2 Plugin Installer](https://github.com/HichTala/draw2-plugin/releases/download/0.2.1/draw2-plugin-0.2.1-x86_64-linux-gnu.deb)
 
-</details>
+2. Ejecuta el instalador haciendo doble clic sobre él y pulsando instalar _O_ ejecutando el comando:
 
-<details>
-<summary>🍏 MacOS</summary>
-
-No conozco OBS en macOS lo suficiente como para ofrecer una guía de instalación fiable.
-El plugin compila correctamente en macOS, pero no lo he probado a fondo.
-Si tienes experiencia con plugins de OBS en macOS y quieres contribuir con una guía de instalación,
-no dudes en enviar un pull request.
-
-#### Compilar desde el código fuente (macOS)
-
-Todavía no hay una versión precompilada para macOS, así que tienes que compilar el plugin tú mismo.
-
-1. Instala los requisitos de compilación con [Homebrew](https://brew.sh):
-
-   ```bash
-   brew install cmake ccache coreutils jq xcbeautify
+   ```shell
+   sudo apt install ./draw2-plugin-0.2.1-x86_64-linux-gnu.deb
    ```
 
-   También necesitas un **Xcode** reciente (con sus herramientas de línea de comandos).
+3. Una vez completada la instalación, abre OBS Studio. Si todo está configurado correctamente, deberías ver en el
+   menú `Docks` una nueva opción llamada `Draw 2`. Puedes activar el dock y colocarlo donde quieras. La instalación
+   todavía no ha terminado: el plugin está instalado, pero aún tienes que instalar el backend de Python. Cierra OBS y
+   sigue los siguientes pasos.
 
-2. Configura y compila (universal — `arm64` + `x86_64`):
+4. Si ya tienes una instalación de Python que quieras usar, puedes saltarte este paso. Cualquier instalación de Python
+   con el paquete `draw` instalado puede funcionar. Usaremos un CPython autocontenido. Una compilación reubicable de
+   [python-build-standalone](https://github.com/astral-sh/python-build-standalone):
 
-   ```bash
-   cmake --preset macos
-   cmake --build build_macos --config RelWithDebInfo
-   ```
-
-3. El bundle del plugin compilado se genera en:
-
-   ```
-   build_macos/RelWithDebInfo/draw2-plugin.plugin
-   ```
-
-4. Instálalo copiando el bundle en tu carpeta de plugins de OBS y luego reinicia OBS:
-
-   ```bash
-   mkdir -p "$HOME/Library/Application Support/obs-studio/plugins"
-   cp -R build_macos/RelWithDebInfo/draw2-plugin.plugin \
-     "$HOME/Library/Application Support/obs-studio/plugins/"
-   ```
-
-   Una vez que OBS se reinicie, el plugin aparece como `Draw 2` en el menú `Docks`.
-
-#### Configurar el backend de Python (macOS)
-
-El plugin ejecuta el backend `draw` como un **proceso Python separado** — no incorpora
-un intérprete. Tú proporcionas una instalación de Python que tenga el paquete `draw`,
-y el plugin lanza `<prefix>/bin/python` y se comunica con él a través de memoria compartida.
-Todavía no hay descarga automática en macOS, así que debes configurarlo manualmente.
-
-> El Python que indiques solo necesita `bin/python` y el paquete `draw` importable.
-> **Cualquier Python 3 reciente funciona — no tiene que coincidir con la compilación del
-> plugin** (el plugin ya no incorpora un intérprete). Un CPython autocontenido es la
-> opción más sencilla.
-
-1. Consigue un CPython autocontenido. Una compilación reubicable de
-   [python-build-standalone](https://github.com/astral-sh/python-build-standalone)
-   funciona bien y no se romperá con `brew upgrade`:
-
-   ```bash
-   # pick the install_only build for your arch (aarch64 for Apple Silicon)
-   curl -fL -o python.tar.gz \
-     https://github.com/astral-sh/python-build-standalone/releases/download/<tag>/cpython-3.13.<x>+<tag>-aarch64-apple-darwin-install_only.tar.gz
+   ```shell
+   # elige la compilación install_only para tu arquitectura (x86_64 para CPU Intel y AMD)
+   curl -fL -o python.tar.gz https://github.com/astral-sh/python-build-standalone/releases/download/20261009/cpython-3.13.16+20261009-x86_64-unknown-linux-gnu-install_only.tar.gz
    mkdir -p ~/.draw2-runtime && tar -xzf python.tar.gz -C ~/.draw2-runtime
    ```
 
-2. Instala el backend `draw` en ese prefijo. Usa la **rama `obs-plugin`** —
-   esa es la que expone el punto de entrada que el plugin lanza (la rama por defecto
-   `main` es la CLI independiente):
+5. Instala el backend `draw` (asegúrate de que [git](https://git-scm.com/install/linux) esté instalado):
 
-   ```bash
+   ```shell
    ~/.draw2-runtime/python/bin/python -m pip install "git+https://github.com/HichTala/draw2@obs-plugin"
    ```
 
-3. En los ajustes de Draw 2, establece **Select Python installation** en la carpeta del prefijo
+6. En los ajustes de Draw 2, establece **Select Python installation** en la carpeta del prefijo
    (la que contiene `bin/` y `lib/`), p. ej. `~/.draw2-runtime/python`.
    Estructura esperada:
 
@@ -186,7 +143,57 @@ Todavía no hay descarga automática en macOS, así que debes configurarlo manua
    <prefix>/lib/python3.13/site-packages/draw
    ```
 
-   </details>
+¡La instalación ha terminado, ya puedes disfrutar detectando!
+
+</details>
+
+<details>
+<summary>🍏 MacOS</summary>
+
+1. Descarga el instalador del plugin desde este enlace:
+   [DRAW2 Plugin Installer]() (la versión para macOS todavía no se ha publicado, estamos trabajando en ello y saldrá
+   pronto; mientras tanto, puedes usar el plugin compilándolo desde el código fuente, consulta la sección
+   [Building from source](../README.md) del README en inglés)
+
+2. Ejecuta el instalador haciendo doble clic sobre él. Verás una ventana emergente que te indica que Apple no ha podido
+   verificar el plugin; ciérrala (`Done`), ve a los ajustes del sistema y busca `Privacidad y seguridad`
+   (`Privacy & Security`). Desplázate hacia abajo hasta ver
+   `"draw2-plugin....pkg" was blocked to protect your Mac` (el mensaje puede aparecer en tu idioma), pulsa
+   `Abrir igualmente` (`Open Anyway`), vuelve a pulsar `Abrir igualmente` y sigue las instrucciones en pantalla.
+
+3. Una vez completada la instalación, abre OBS Studio. Si todo está configurado correctamente, deberías ver en el
+   menú `Docks` una nueva opción llamada `Draw 2`. Puedes activar el dock y colocarlo donde quieras. La instalación
+   todavía no ha terminado: el plugin está instalado, pero aún tienes que instalar el backend de Python. Cierra OBS y
+   sigue los siguientes pasos.
+
+4. Si ya tienes una instalación de Python que quieras usar, puedes saltarte este paso. Cualquier instalación de Python
+   con el paquete `draw` instalado puede funcionar. Usaremos un CPython autocontenido. Una compilación reubicable de
+   [python-build-standalone](https://github.com/astral-sh/python-build-standalone):
+
+   ```shell
+   # elige la compilación install_only para tu arquitectura (aarch64 para Apple Silicon)
+   curl -fL -o python.tar.gz https://github.com/astral-sh/python-build-standalone/releases/download/20261009/cpython-3.13.16+20261009-aarch64-apple-darwin-install_only.tar.gz
+   mkdir -p ~/.draw2-runtime && tar -xzf python.tar.gz -C ~/.draw2-runtime
+   ```
+
+5. Instala el backend `draw` (asegúrate de que [git](https://git-scm.com/install/mac) esté instalado):
+
+   ```shell
+   ~/.draw2-runtime/python/bin/python -m pip install "git+https://github.com/HichTala/draw2@obs-plugin"
+   ```
+
+6. En los ajustes de Draw 2, establece **Select Python installation** en la carpeta del prefijo
+   (la que contiene `bin/` y `lib/`), p. ej. `~/.draw2-runtime/python`.
+   Estructura esperada:
+
+   ```text
+   <prefix>/bin/python
+   <prefix>/lib/python3.13/site-packages/draw
+   ```
+
+¡La instalación ha terminado, ya puedes disfrutar detectando!
+
+</details>
 
 ### 🚀 Uso
 
@@ -196,8 +203,7 @@ Cuando el plugin está instalado y los pesos del modelo están descargados, pued
 2. En el dock de Draw 2 puedes configurar los ajustes del plugin haciendo clic en el icono de engranaje junto al
    botón `Start DRAW`:
    - **Select Python installation**: ruta al prefijo de Python que tiene instalado el backend `draw` (la carpeta que
-     contiene `bin/` y `lib/`). Debe ser una instalación de Python completa, no un virtualenv. Consulta la sección de
-     configuración de macOS para más detalles.
+     contiene `bin/` y `lib/`). Debe ser una instalación de Python completa, no un virtualenv.
    - **Select Deck List**: elige el archivo de deck list que contiene las cartas que quieres detectar. Se pueden
      gestionar hasta 3 deck lists a la vez. Para añadir nuevas deck lists, puedes hacer clic en el botón
      `Open Folder` y arrastrar y soltar tus archivos de deck list (en formato ydk) en la carpeta que se abre.
@@ -217,8 +223,14 @@ Cuando el plugin está instalado y los pesos del modelo están descargados, pued
 Aquí tienes una pequeña vista previa :)
 
 <div align="center">
-    <img src="https://raw.githubusercontent.com/HichTala/draw2/refs/heads/main/figures/overview.gif" width="960" height="540" />
+    <img src="https://raw.githubusercontent.com/HichTala/draw2/refs/heads/main/docs/assets/overview.gif" width="960" height="540" />
 </div>
+
+### ⚙️ Compilar desde el código fuente
+
+> Las instrucciones para compilar el plugin desde el código fuente (Windows, Linux y macOS), incluida la
+> configuración del backend de Python, solo están disponibles en inglés. Consulta la sección
+> **Building from source** del [README en inglés](../README.md).
 
 ---
 
