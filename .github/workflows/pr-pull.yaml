@@ -5,6 +5,7 @@ on:
   pull_request:
     paths-ignore:
       - '**.md'
+      - 'readmes/**'
     branches: [master, main]
     types: [ opened, synchronize, reopened ]
 permissions:
